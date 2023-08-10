@@ -1,22 +1,23 @@
+from itertools import islice
 import sys
-from typing import Any, Callable
+from typing import Any, Callable, Iterable, TypeVar
 from concurrent.futures import ThreadPoolExecutor
-from langchain import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from langchain.chat_models import ChatOpenAI
 from pathlib import Path
 from rich import print as rprint
-from rich.pretty import pprint
 import json
+import datetime as dt
 from langchain.output_parsers import OutputFixingParser
-from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
 )
 from rich.progress import Progress
 from functools import partial
+from dotenv import load_dotenv
 
+load_dotenv()
 chat = ChatOpenAI()
 
 Record = dict[str, Any]
@@ -27,29 +28,27 @@ def main(filename: str):
     with filepath.open("r") as f:
         raw_mbay_content = json.load(f)
 
-    # raw_entry = raw_mbay_content[0]
 
-    # entry = extract_entry(raw_entry)
-    # rprint(entry)
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        with Progress() as progress:
-            task_id = progress.add_task("cleaning entries", total=len(raw_mbay_content))
-
-            fn = partial(extract_entry, progress=lambda: progress.advance(task_id))
-            results = executor.map(fn, raw_mbay_content)
-            results = list(results)
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        results = []
+        fn = partial(extract_entry)
+        n = 10
+        for i, batch in enumerate(batched(raw_mbay_content, n)):
+            batch_result = executor.map(fn, batch)
+            results.extend(batch_result)
+            rprint(f"{dt.datetime.now()} batch {i} complete. {n*(i+1)/len(raw_mbay_content)*100:.2f}% complete")
     
     success = [r["result"] for r in results if r["status"] == "success"]
     
     outfilepath = filepath.parent / "mbay_dict_english_clean.json"
-    with outfilepath.open("w") as f:
-        json.dump(success, f, indent=2)
+    with outfilepath.open("w", encoding="utf-8") as f:
+        json.dump(success, f, indent=2, ensure_ascii=False)
 
     errors = [r["error"] for r in results if r["status"] == "error"]
 
     error_filepath = filepath.parent / "mbay_dict_english_clean_errors.json"
-    with error_filepath.open("w") as f:
-        json.dump(errors, f, indent=2)
+    with error_filepath.open("w", encoding="utf-8") as f:
+        json.dump(errors, f, indent=2, ensure_ascii=False)
 
 
 def extract_entry(entry: Record, verbose=False, progress: Callable[[], None] | None = None) -> Record:
@@ -171,6 +170,17 @@ prompt = HumanMessagePromptTemplate.from_template(
     template_format="jinja2",
     partial_variables={"format_instructions": parser.get_format_instructions()},
 )
+
+T  = TypeVar("T")
+
+def batched(iterable: Iterable[T], n: int):
+    "Batch data into tuples of length n. The last batch may be shorter."
+    # batched('ABCDEFG', 3) --> ABC DEF G
+    if n < 1:
+        raise ValueError('n must be at least one')
+    it = iter(iterable)
+    while batch := tuple(islice(it, n)):
+        yield batch
 
 if __name__ == "__main__":
     main(sys.argv[1])
