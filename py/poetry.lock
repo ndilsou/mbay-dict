@@ -568,6 +568,19 @@ files = [
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
+name = "clipboard"
+version = "0.0.4"
+description = "A cross platform clipboard operation library of Python. Works for Windows, Mac and Linux."
+optional = false
+python-versions = "*"
+files = [
+    {file = "clipboard-0.0.4.tar.gz", hash = "sha256:a72a78e9c9bf68da1c3f29ee022417d13ec9e3824b511559fd2b702b1dd5b817"},
+]
+
+[package.dependencies]
+pyperclip = ">=1.3"
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -663,6 +676,17 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
     {file = "defusedxml-0.7.1-py2.py3-none-any.whl", hash = "sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61"},
     {file = "defusedxml-0.7.1.tar.gz", hash = "sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69"},
+]
+
+[[package]]
+name = "diskcache"
+version = "5.6.1"
+description = "Disk Cache -- Disk and file backed persistent cache."
+optional = false
+python-versions = ">=3"
+files = [
+    {file = "diskcache-5.6.1-py3-none-any.whl", hash = "sha256:558c6a2d5d7c721bb00e40711803d6804850c9f76c426ed81ecc627fe9d2ce2d"},
+    {file = "diskcache-5.6.1.tar.gz", hash = "sha256:e4c978532feff5814c4cc00fe1e11e40501985946643d73220d41ee7737c72c3"},
 ]
 
 [[package]]
@@ -1371,6 +1395,24 @@ files = [
 [package.dependencies]
 pydantic = ">=1,<2"
 requests = ">=2,<3"
+
+[[package]]
+name = "llama-cpp-python"
+version = "0.1.77"
+description = "A Python wrapper for llama.cpp"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "llama_cpp_python-0.1.77.tar.gz", hash = "sha256:76c7fae8f5386edecf38cb149bf119127e1208883f0456c6998465648d6c242e"},
+]
+
+[package.dependencies]
+diskcache = ">=5.6.1"
+numpy = ">=1.20.0"
+typing-extensions = ">=4.5.0"
+
+[package.extras]
+server = ["fastapi (>=0.100.0)", "pydantic-settings (>=2.0.1)", "sse-starlette (>=1.6.1)", "uvicorn (>=0.22.0)"]
 
 [[package]]
 name = "markdown-it-py"
@@ -2104,6 +2146,16 @@ files = [
 
 [package.extras]
 plugins = ["importlib-metadata"]
+
+[[package]]
+name = "pyperclip"
+version = "1.8.2"
+description = "A cross-platform clipboard module for Python. (Only handles plain text for now.)"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyperclip-1.8.2.tar.gz", hash = "sha256:105254a8b04934f0bc84e9c24eb360a591aaf6535c9def5f29d92af107a9bf57"},
+]
 
 [[package]]
 name = "python-dateutil"
@@ -2983,4 +3035,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "6c78361c8ecbff439a209339f728966aed1fff618603558fc509f9897d63790c"
+content-hash = "c1c8eb538e99fd1f9d2bfb04f56ce66532b575f249d2431aca5ff4c59e964d18"

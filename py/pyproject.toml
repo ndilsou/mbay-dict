@@ -16,6 +16,8 @@ tenacity = "^8.2.2"
 python-dotenv = "^1.0.0"
 more-itertools = "^10.1.0"
 jsonlines = "^3.1.0"
+llama-cpp-python = "^0.1.77"
+clipboard = "^0.0.4"
 
 
 [tool.poetry.group.dev.dependencies]
