@@ -37,9 +37,11 @@ export default function Home({
 }
 
 function Entries({ entries }: { entries: Entry[] }) {
-  const groups = R.groupBy(entries, (entry) =>
-    entry.french_translation.toLowerCase().charAt(0)
-  );
+  const groups = R.groupBy(entries, (entry) => {
+    const lowerCase = entry.french_translation.toLowerCase();
+    const term = lowerCase.replace(/^['\(\{\[-]/, "");
+    return term.charAt(0);
+  });
   const groupedEntries = Object.keys(groups).map((key) => {
     return {
       key: key,
