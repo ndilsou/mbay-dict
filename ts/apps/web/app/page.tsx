@@ -1,30 +1,38 @@
 import { EntryCard } from "@/components/entry-card";
 import { LetterScroll } from "@/components/letter-scroll";
+import { PageContainer } from "@/components/page-container";
 import { LETTERS } from "@/lib/constants";
-import { entries, type Entry } from "@/lib/data";
+import { entriesDataset, type Entry } from "@/lib/data";
 import Link from "next/link";
 import * as R from "remeda";
+import { SearchResult } from "../components/search-result";
 
-export default function Home() {
+export default function Home({
+  searchParams,
+}: {
+  searchParams: Record<string, string>;
+}) {
+  const queryParams = new URLSearchParams(searchParams);
+
+  const term = queryParams.get("q")?.toLowerCase();
+  let entries: Entry[];
+  if (term) {
+    entries = entriesDataset.filter((entry) => {
+      const text = entry.french_translation.toLowerCase();
+      return text.includes(term);
+    });
+  } else {
+    entries = entriesDataset;
+  }
+
   return (
-    <div className="relative flex flex-col items-center justify-start p-24 max-w-5xl mx-auto">
+    <PageContainer>
+      <h6 id="main-title" className="" />
       <LetterScroll className="z-40 fixed top-1/2 transform -translate-y-1/2 right-4" />
-      <h1 className="text-6xl font-bold text-center">
-        Dictionnaire Mbay-Français
-      </h1>
-      <div className="flex flex-wrap justify-center mt-8 gap-4">
-        {LETTERS.map((letter) => (
-          <Link
-            className="w-12 flex justify-center items-center p-4 bg-primary rounded-lg hover:bg-primary/50 capitalize text-primary-foreground"
-            key={letter}
-            href={`/french-mbay/${letter}`}
-          >
-            {letter}
-          </Link>
-        ))}
-      </div>
+      {term && <SearchResult hits={entries.length} term={term} />}
+      <Alphabet />
       <Entries entries={entries} />
-    </div>
+    </PageContainer>
   );
 }
 
@@ -59,6 +67,22 @@ function Entries({ entries }: { entries: Entry[] }) {
             ))}
           </div>
         </section>
+      ))}
+    </div>
+  );
+}
+
+function Alphabet() {
+  return (
+    <div className="flex flex-wrap justify-center mt-8 gap-4">
+      {LETTERS.map((letter) => (
+        <Link
+          className="w-12 flex justify-center items-center p-4 bg-primary rounded-lg hover:bg-primary/50 capitalize text-primary-foreground"
+          key={letter}
+          href={`#${letter}`}
+        >
+          {letter}
+        </Link>
       ))}
     </div>
   );

@@ -28,9 +28,16 @@ export const ExampleSchema = z.object({
 
 export type Example = z.infer<typeof ExampleSchema>;
 
-export const entries = EntrySchema.array().parse(
+export const entriesDataset = EntrySchema.array().parse(
   JSON.parse(
     readFileSync("./data/entries.json", {
+      encoding: "utf-8",
+    })
+  )
+);
+export const examplesDataset = ExampleSchema.array().parse(
+  JSON.parse(
+    readFileSync("./data/examples.json", {
       encoding: "utf-8",
     })
   )

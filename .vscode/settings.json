@@ -1,0 +1,29 @@
+{
+  "search.exclude": {
+    "**/.sst": true
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "py": true,
+    "ts": true
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  //file nesting patterns
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "Cargo.toml": "Cargo.lock",
+    "package.json": "package-lock.json, .prettierrc, .prettierignore, pnpm-lock.yaml, pnpm-workspace.yaml, .npmrc, .eslintrc.js, .eslintrc.cjs, .eslintignore",
+    "tailwind.config.cjs": "postcss.config.cjs",
+    "pyproject.toml": "poetry.lock, workspace.toml"
+  },
+  "editor.formatOnSave": true,
+  "black-formatter.interpreter": [
+    "./py/.venv/bin/python"
+  ],
+}

@@ -1,0 +1,23 @@
+{
+  "name": "cloud",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sst dev",
+    "build": "sst build",
+    "deploy": "sst deploy",
+    "remove": "sst remove",
+    "console": "sst console",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.0",
+    "@types/node": "^20.5.0",
+    "aws-cdk-lib": "2.91.0",
+    "constructs": "10.2.69",
+    "sst": "^2.24.7",
+    "typescript": "^5.1.6"
+  },
+  "workspaces": []
+}

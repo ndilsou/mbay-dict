@@ -17,11 +17,11 @@ module.exports = {
     },
     extend: {
       minHeight: {
-        page: "calc(100vh - 2.75rem)",
+        page: "calc(100vh - 3rem)",
       },
       height: {
-        page: "calc(100vh - 2.75rem)",
-        header: "2.75rem",
+        page: "calc(100vh - 3rem)",
+        header: "3rem",
       },
       colors: {
         border: "hsl(var(--border))",
@@ -83,5 +83,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 };

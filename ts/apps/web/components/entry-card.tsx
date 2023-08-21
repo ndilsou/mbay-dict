@@ -4,6 +4,8 @@ import { Badge } from "./ui/badge";
 import Link from "next/link";
 import { Volume1 } from "lucide-react";
 import { Button } from "./ui/button";
+import { languageToCode } from "@/lib/utils";
+import { SoundButton } from "./sound-button";
 
 export function EntryCard({
   entry,
@@ -24,13 +26,13 @@ export function EntryCard({
     <Card>
       <CardHeader className="flex-row justify-start gap-4 items-center">
         <Button variant="link" className="p-0">
-          <Link href={`/entries/${entry.id}`}>
+          <Link href={`/entries/${languageToCode(language)}/${entry.id}`}>
             <h1 className="text-2xl font-bold">{entry.headword}</h1>
           </Link>
         </Button>
-        <Button variant="ghost" className="text-muted-foreground" size="icon">
-          <Volume1 />
-        </Button>
+        {entry.sound_filename && (
+          <SoundButton filename={entry.sound_filename} />
+        )}
       </CardHeader>
       <CardContent>
         <p className="text-lg">{translation}</p>
