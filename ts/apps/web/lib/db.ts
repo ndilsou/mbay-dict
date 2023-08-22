@@ -13,7 +13,7 @@ export function getDB() {
 }
 
 const ObjectIdSchema = z
-  .any()
+  .instanceof(ObjectId)
   .refine(ObjectId.isValid, {
     message: "invalid object id",
   })

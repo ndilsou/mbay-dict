@@ -13,14 +13,14 @@ export function LetterScroll({ className }: { className?: string }) {
       )}
     >
       <li>
-        <Link key="top" href="#main-title">
+        <Link key="home" href="#main-title">
           <Button variant="link" size="sm" className="h-4">
             <Home />
           </Button>
         </Link>
       </li>
       {LETTERS.map((letter) => (
-        <li>
+        <li key={letter}>
           <Link key={letter} href={`#${letter}`}>
             <Button variant="link" size="sm" className="h-4">
               <span className="text-lg">{letter}</span>

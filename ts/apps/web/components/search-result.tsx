@@ -7,7 +7,7 @@ export function SearchResult({ hits, term }: { hits: number; term: string }) {
   return (
     <div className="flex items-center justify-center w-full gap-2">
       <h2>
-        {hits} entrées trouvées pour "{term}"
+        {hits} entrées trouvées pour &quot;{term}&quot;
       </h2>
       <Link href="/">
         <TooltipText text="retour a l'index">

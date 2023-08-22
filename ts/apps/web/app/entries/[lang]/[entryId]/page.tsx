@@ -56,7 +56,7 @@ export default async function Page({
       </div>
       <p className="text-xl">{translation}</p>
       <div>
-        <h3 className="">Exemples d'usage:</h3>
+        <h3 className="">Exemples d&apos;usage:</h3>
         <Examples examples={entry.examples} language={language} />
       </div>
     </PageContainer>
@@ -74,7 +74,7 @@ async function Examples({
   return (
     <ul className="list-none pl-0">
       {examples.map((example) => (
-        <li>
+        <li key={example._id}>
           <ExampleCard example={example} language={language} />
         </li>
       ))}
