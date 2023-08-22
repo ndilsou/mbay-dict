@@ -4,13 +4,20 @@ version = "0.1.0"
 description = ""
 authors = ["Ndil-Adjim  Sou Ngadoy <nasoungadoy@gmail.com>"]
 readme = "README.md"
-packages = [{include = "mbay_dict"}]
+packages = [
+    { include = "mbay_dict/http", from = "bases" },
+    { include = "mbay_dict/api", from = "bases" },
+    { include = "mbay_dict/core", from = "components" },
+    { include = "mbay_dict/logging", from = "components" },
+    { include = "mbay_dict/aws", from = "components" },
+    { include = "development" },
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.11"
-langchain = "^0.0.259"
 openai = "^0.27.8"
-pydantic = "==1.*"
+pydantic = "^2.1.1"
 httpx = "^0.24.1"
 tenacity = "^8.2.2"
 python-dotenv = "^1.0.0"
@@ -18,6 +25,8 @@ more-itertools = "^10.1.0"
 jsonlines = "^3.1.0"
 llama-cpp-python = "^0.1.77"
 clipboard = "^0.0.4"
+langchain = "^0.0.268"
+instructor = "^0.2.4"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -27,6 +36,8 @@ ruff = "^0.0.283"
 colorama = "^0.4.6"
 rich = "^13.5.2"
 ipython = "^8.14.0"
+aws-lambda-powertools = "^2.22.0"
+bump-pydantic = "^0.6.1"
 
 [tool.ruff]
 line-length = 120
