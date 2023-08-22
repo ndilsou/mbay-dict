@@ -6,8 +6,9 @@ import { entriesDataset, type Entry } from "@/lib/data";
 import Link from "next/link";
 import * as R from "remeda";
 import { SearchResult } from "../components/search-result";
+import { listEntriesIndex, type IndexEntry } from "@/lib/db";
 
-export default function Home({
+export default async function Home({
   searchParams,
 }: {
   searchParams: Record<string, string>;
@@ -15,14 +16,15 @@ export default function Home({
   const queryParams = new URLSearchParams(searchParams);
 
   const term = queryParams.get("q")?.toLowerCase();
-  let entries: Entry[];
+  const entriesIndex = await listEntriesIndex();
+  let entries: IndexEntry[];
   if (term) {
-    entries = entriesDataset.filter((entry) => {
+    entries = entriesIndex.filter((entry) => {
       const text = entry.french_translation.toLowerCase();
       return text.includes(term);
     });
   } else {
-    entries = entriesDataset;
+    entries = entriesIndex;
   }
 
   return (
@@ -36,27 +38,11 @@ export default function Home({
   );
 }
 
-function Entries({ entries }: { entries: Entry[] }) {
-  const groups = R.groupBy(entries, (entry) => {
-    const lowerCase = entry.french_translation.toLowerCase();
-    const term = lowerCase.replace(/^['\(\{\[-]/, "");
-    return term.charAt(0);
-  });
-  const groupedEntries = Object.keys(groups).map((key) => {
-    return {
-      key: key,
-      entries: groups[key].sort((a, b) =>
-        a.french_translation.localeCompare(b.french_translation)
-      ),
-    };
-  });
-  const sortedGroupedEntries = groupedEntries.sort((a, b) =>
-    a.key.localeCompare(b.key)
-  );
-
+function Entries({ entries }: { entries: IndexEntry[] }) {
+  const groupedEntries = createGroups(entries);
   return (
     <div className="flex flex-col gap-2 mt-4">
-      {sortedGroupedEntries.map((group) => (
+      {groupedEntries.map((group) => (
         <section key={group.key}>
           <Link href={`/#${group.key}`}>
             <h2 className="text-4xl font-bold capitalize" id={group.key}>
@@ -65,7 +51,7 @@ function Entries({ entries }: { entries: Entry[] }) {
           </Link>
           <div className="flex flex-col gap-2 mt-4">
             {group.entries.map((entry) => (
-              <EntryCard key={entry.id} entry={entry} language="french" />
+              <EntryCard key={entry._id} entry={entry} language="french" />
             ))}
           </div>
         </section>
@@ -88,4 +74,24 @@ function Alphabet() {
       ))}
     </div>
   );
+}
+
+function createGroups(entries: IndexEntry[]) {
+  const groups = R.groupBy(entries, (entry) => {
+    const lowerCase = entry.french_translation.toLowerCase();
+    const term = lowerCase.replace(/^['\(\{\[-]/, "");
+    return term.charAt(0);
+  });
+  const groupedEntries = Object.keys(groups).map((key) => {
+    return {
+      key: key,
+      entries: groups[key].sort((a, b) =>
+        a.french_translation.localeCompare(b.french_translation)
+      ),
+    };
+  });
+  const sortedGroupedEntries = groupedEntries.sort((a, b) =>
+    a.key.localeCompare(b.key)
+  );
+  return sortedGroupedEntries;
 }

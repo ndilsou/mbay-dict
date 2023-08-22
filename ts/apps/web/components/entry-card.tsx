@@ -6,12 +6,13 @@ import { Volume1 } from "lucide-react";
 import { Button } from "./ui/button";
 import { languageToCode } from "@/lib/utils";
 import { SoundButton } from "./sound-button";
+import type { IndexEntry } from "@/lib/db";
 
 export function EntryCard({
   entry,
   language,
 }: {
-  entry: Entry;
+  entry: IndexEntry;
   language: "french" | "english";
 }) {
   let translation: string;
@@ -26,7 +27,7 @@ export function EntryCard({
     <Card>
       <CardHeader className="flex-row justify-start gap-4 items-center">
         <Button variant="link" className="p-0">
-          <Link href={`/entries/${languageToCode(language)}/${entry.id}`}>
+          <Link href={`/entries/${languageToCode(language)}/${entry._id}`}>
             <h1 className="text-2xl font-bold">{entry.headword}</h1>
           </Link>
         </Button>

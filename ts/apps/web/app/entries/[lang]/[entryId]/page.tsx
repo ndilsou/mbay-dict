@@ -3,12 +3,13 @@ import { SoundButton } from "@/components/sound-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  entriesDataset,
-  examplesDataset,
-  type Entry,
-  type Example,
-} from "@/lib/data";
+// import {
+//   entriesDataset,
+//   examplesDataset,
+//   type Entry,
+//   type Example,
+// } from "@/lib/data";
+import { getEntry, type Entry, type Example } from "@/lib/db";
 import { langCodeToName } from "@/lib/utils";
 import { Undo } from "lucide-react";
 import Link from "next/link";
@@ -26,7 +27,7 @@ export default async function Page({
     notFound();
   }
 
-  const entry = await getEntry(Number.parseInt(entryId));
+  const entry: Entry = await getEntry(entryId);
   if (!entry) {
     notFound();
   }
@@ -56,20 +57,20 @@ export default async function Page({
       <p className="text-xl">{translation}</p>
       <div>
         <h3 className="">Exemples d'usage:</h3>
-        <Examples entryId={entry.id} language={language} />
+        <Examples examples={entry.examples} language={language} />
       </div>
     </PageContainer>
   );
 }
 
 async function Examples({
-  entryId,
+  examples,
   language,
 }: {
-  entryId: number;
+  examples: Example[];
   language: "french" | "english";
 }) {
-  const examples = await getExamples(entryId);
+  // const examples = await getExamples(entryId);
   return (
     <ul className="list-none pl-0">
       {examples.map((example) => (
@@ -108,14 +109,14 @@ function ExampleCard({
   );
 }
 
-async function getEntry(id: number): Promise<Entry | null> {
-  const entry = entriesDataset.filter((entry) => entry.id === id).at(0);
-  if (!entry) {
-    return null;
-  }
-  return entry;
-}
+// async function getEntry(id: number): Promise<Entry | null> {
+//   const entry = entriesDataset.filter((entry) => entry.id === id).at(0);
+//   if (!entry) {
+//     return null;
+//   }
+//   return entry;
+// }
 
-async function getExamples(id: number): Promise<Example[]> {
-  return examplesDataset.filter((example) => example.entry_id === id);
-}
+// async function getExamples(id: number): Promise<Example[]> {
+//   return examplesDataset.filter((example) => example.entry_id === id);
+// }
