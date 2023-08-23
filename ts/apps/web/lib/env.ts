@@ -3,8 +3,6 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    MONGO_PASSWORD: z.string().min(1),
-    MONGO_USERNAME: z.string().min(1),
     MONGO_URI: z.string().url(),
   },
   //   client: {},
