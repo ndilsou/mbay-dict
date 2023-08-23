@@ -1,8 +1,8 @@
 import { MongoClient, ObjectId } from "mongodb";
 import { z } from "zod";
+import { env } from "./env";
 
-const url = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@mbay-dictionary.jyvobd6.mongodb.net/?retryWrites=true&w=majority`;
-const client = new MongoClient(url, {
+const client = new MongoClient(env.MONGO_URI, {
   tls: true,
   socketTimeoutMS: 5000,
   connectTimeoutMS: 1000,
