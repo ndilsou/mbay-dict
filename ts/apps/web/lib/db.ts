@@ -2,7 +2,7 @@ import { MongoClient, ObjectId } from "mongodb";
 import { z } from "zod";
 import { env } from "./env";
 
-const client = new MongoClient(env.MONGO_URI, {
+const client = new MongoClient(env.MONGODB_URI, {
   tls: true,
   socketTimeoutMS: 5000,
   connectTimeoutMS: 1000,

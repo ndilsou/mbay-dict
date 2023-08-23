@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    MONGO_URI: z.string().url(),
+    MONGODB_URI: z.string().url(),
   },
   //   client: {},
   // If you're using Next.js < 13.4.4, you'll need to specify the runtimeEnv manually
