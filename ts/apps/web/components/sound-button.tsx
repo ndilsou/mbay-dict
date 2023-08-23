@@ -2,6 +2,7 @@
 
 import { Volume1 } from "lucide-react";
 import { Button } from "./ui/button";
+import { env } from "@/lib/env";
 // import { useRef } from "react";
 
 let currentAudio: HTMLAudioElement;
@@ -14,9 +15,11 @@ export function SoundButton({ filename }: { filename: string }) {
   //     await audioRef.current?.play();
   //   };
   const play = async () => {
-    console.log(`play ${filename}`);
     if (currentAudio) currentAudio.pause();
-    currentAudio = new Audio(`/sounds/${filename}`);
+
+    currentAudio = new Audio(
+      `https://${env.NEXT_PUBLIC_BUCKET_NAME}.s3.eu-west-1.amazonaws.com/sounds/${filename}`
+    );
     currentAudio.play();
   };
   return (

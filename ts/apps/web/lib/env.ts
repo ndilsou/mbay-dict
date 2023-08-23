@@ -2,6 +2,9 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 export const env = createEnv({
+  client: {
+    NEXT_PUBLIC_BUCKET_NAME: z.string().min(1),
+  },
   server: {
     MONGODB_URI: z.string().url(),
   },
@@ -12,7 +15,9 @@ export const env = createEnv({
   //     MONGO_USERNAME: process.env.MONGO_USERNAME,
   //   },
   // For Next.js >= 13.4.4, you only need to destructure client variables:
-  experimental__runtimeEnv: {},
+  experimental__runtimeEnv: {
+    NEXT_PUBLIC_BUCKET_NAME: process.env.NEXT_PUBLIC_BUCKET_NAME,
+  },
   // experimental__runtimeEnv: {
   //   NEXT_PUBLIC_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_PUBLISHABLE_KEY,
   // }
