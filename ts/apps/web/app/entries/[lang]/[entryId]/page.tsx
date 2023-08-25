@@ -1,12 +1,13 @@
 import { Examples } from "@/components/examples";
+import { Loading } from "@/components/loading";
 import { PageContainer } from "@/components/page-container";
 import { SoundButton } from "@/components/sound-button";
-import { Button } from "@/components/ui/button";
 import { getEntry, type Entry } from "@/lib/db";
 import { langCodeToName } from "@/lib/utils";
-import { Undo } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { BackButton } from "../../../../components/back-button";
 
 export default async function Page({
   params: { entryId, lang },
@@ -34,12 +35,7 @@ export default async function Page({
   return (
     <PageContainer className="items-start justify-start prose dark:prose-invert">
       <div className="flex items-end justify-end w-full">
-        <Link href="/">
-          <Button variant="outline">
-            <Undo />
-            <span className="ml-1">Retour</span>
-          </Button>
-        </Link>
+        <BackButton />
       </div>
       <div className="flex items-baseline">
         <h1 className="text-6xl font-bold mb-2">{entry.headword}</h1>
@@ -50,8 +46,11 @@ export default async function Page({
       <p className="text-xl">{translation}</p>
       <div>
         <h3 className="">Exemples d&apos;usage:</h3>
-        <Examples entryId={entry._id} language={language} />
+        <Suspense fallback={<Loading />}>
+          <Examples entryId={entry._id} language={language} />
+        </Suspense>
       </div>
     </PageContainer>
   );
 }
+

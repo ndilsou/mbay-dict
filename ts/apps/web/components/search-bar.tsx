@@ -9,15 +9,13 @@ export function SearchBar() {
   const router = useRouter();
   const placeholder = "Cherchez un mot...";
   function handleSubmit(e: React.FormEvent<SearchFormElement>) {
-    // const validationError = validateInput(e.target.value);
     e.preventDefault();
-    console.log("search");
     const form = e.currentTarget;
     const q = form.elements.search.value;
     if (!q) return;
 
     console.log(q);
-    router.push(`/?q=${q}`);
+    router.push(`/s/${q}`);
     form.elements.search.value = "";
   }
 

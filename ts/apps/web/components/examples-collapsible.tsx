@@ -9,6 +9,8 @@ import {
 } from "./ui/collapsible";
 import { Examples } from "./examples";
 import { Separator } from "./ui/separator";
+import { Suspense } from "react";
+import { Loading } from "./loading";
 
 export function ExamplesCollapsible({
   entry,
@@ -54,7 +56,9 @@ export function ExamplesCollapsible({
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent className="gap-1 mt-2">
-        <Examples entryId={entry._id} language={language} />
+        <Suspense fallback={<Loading />}>
+          <Examples entryId={entry._id} language={language} />
+        </Suspense>
       </CollapsibleContent>
     </Collapsible>
   );

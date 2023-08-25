@@ -98,6 +98,9 @@ importers:
       postcss:
         specifier: 8.4.28
         version: 8.4.28
+      prettier:
+        specifier: ^3.0.2
+        version: 3.0.2
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -7495,7 +7498,6 @@ packages:
     resolution: {integrity: sha512-o2YR9qtniXvwEZlOKbveKfDQVyqxbEIWn48Z8m3ZJjBjcCmUy3xZGIv+7AkaeuaTr6yPXJjwv07ZWlsWbEy1rQ==}
     engines: {node: '>=14'}
     hasBin: true
-    dev: true
 
   /process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
