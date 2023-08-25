@@ -27,6 +27,14 @@ llama-cpp-python = "^0.1.77"
 clipboard = "^0.0.4"
 langchain = "^0.0.268"
 instructor = "^0.2.4"
+pandas = "^2.0.3"
+transformers = "^4.32.0"
+datasets = "^2.14.4"
+evaluate = "^0.4.0"
+sacrebleu = "^2.3.1"
+pymongo = "^4.5.0"
+xsdata = {extras = ["cli", "lxml", "soap"], version = "^23.8"}
+dbfread = "^2.0.7"
 
 
 [tool.poetry.group.dev.dependencies]
