@@ -53,6 +53,7 @@ export const IndexEntrySchema = z.object({
   french_translation: z.string(),
   part_of_speech: z.string().nullable().default(null),
   sound_filename: z.string().nullable().default(null),
+  examples: z.array(z.object({ _id: ObjectIdSchema })),
 });
 
 export type IndexEntry = z.infer<typeof IndexEntrySchema>;
@@ -61,14 +62,21 @@ export async function listEntriesIndex(): Promise<IndexEntry[]> {
   const db = getDB();
   const entries = await db
     .collection("entries")
-    .find()
-    .project({
-      headword: true,
-      english_translation: true,
-      french_translation: true,
-      part_of_speech: true,
-      sound_filename: true,
-    })
+    .find(
+      {},
+      {
+        projection: {
+          headword: true,
+          english_translation: true,
+          french_translation: true,
+          part_of_speech: true,
+          sound_filename: true,
+          examples: {
+            _id: 1,
+          },
+        },
+      },
+    )
     .toArray();
 
   return IndexEntrySchema.array().parse(entries);
@@ -83,4 +91,22 @@ export async function getEntry(id: string): Promise<Entry> {
     throw new Error("Entry not found");
   }
   return EntrySchema.parse(entry);
+}
+
+export const ExamplesSchema = z.object({
+  _id: ObjectIdSchema,
+  examples: z.array(ExampleSchema),
+});
+
+export type EntryExamples = z.infer<typeof ExamplesSchema>;
+
+export async function getExamples(id: string): Promise<EntryExamples> {
+  const db = getDB();
+  const result = await db
+    .collection("entries")
+    .findOne({ _id: new ObjectId(id) }, { projection: { examples: true } });
+  if (!result) {
+    throw new Error("Entry not found");
+  }
+  return ExamplesSchema.parse(result);
 }

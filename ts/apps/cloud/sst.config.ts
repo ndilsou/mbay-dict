@@ -7,7 +7,7 @@ export default {
     return {
       name: "mbay-dictionary",
       region: "eu-west-1",
-      profile: "mbay-sso"
+      profile: "mbay-sso",
     };
   },
   stacks(app: App) {

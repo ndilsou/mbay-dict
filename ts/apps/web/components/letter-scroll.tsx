@@ -9,7 +9,7 @@ export function LetterScroll({ className }: { className?: string }) {
     <ol
       className={cn(
         "flex flex-col items-center justify-center gap-1",
-        className
+        className,
       )}
     >
       <li>

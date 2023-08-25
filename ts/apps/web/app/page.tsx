@@ -2,11 +2,10 @@ import { EntryCard } from "@/components/entry-card";
 import { LetterScroll } from "@/components/letter-scroll";
 import { PageContainer } from "@/components/page-container";
 import { LETTERS } from "@/lib/constants";
-import { entriesDataset, type Entry } from "@/lib/data";
 import Link from "next/link";
 import * as R from "remeda";
 import { SearchResult } from "../components/search-result";
-import { listEntriesIndex, type IndexEntry } from "@/lib/db";
+import { listEntriesIndex, type IndexEntry, type Entry } from "@/lib/db";
 
 export default async function Home({
   searchParams,
@@ -86,12 +85,12 @@ function createGroups(entries: IndexEntry[]) {
     return {
       key: key,
       entries: groups[key].sort((a, b) =>
-        a.french_translation.localeCompare(b.french_translation)
+        a.french_translation.localeCompare(b.french_translation),
       ),
     };
   });
   const sortedGroupedEntries = groupedEntries.sort((a, b) =>
-    a.key.localeCompare(b.key)
+    a.key.localeCompare(b.key),
   );
   return sortedGroupedEntries;
 }

@@ -18,7 +18,7 @@ export function SoundButton({ filename }: { filename: string }) {
     if (currentAudio) currentAudio.pause();
 
     currentAudio = new Audio(
-      `https://${env.NEXT_PUBLIC_BUCKET_NAME}.s3.eu-west-1.amazonaws.com/sounds/${filename}`
+      `https://${env.NEXT_PUBLIC_BUCKET_NAME}.s3.eu-west-1.amazonaws.com/sounds/${filename}`,
     );
     currentAudio.play();
   };

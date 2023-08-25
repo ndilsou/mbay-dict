@@ -74,7 +74,7 @@ type ApiInput = {
 
 function createHttpApi(
   stack: Stack,
-  { parameters: parameters, root }: ApiInput
+  { parameters: parameters, root }: ApiInput,
 ) {
   const fn = createMonolithFunction(stack, "httpApiFn", {
     functionName: `${stack.stage}-http-api-fn`,
@@ -107,7 +107,7 @@ type ApiFunctionProps = {
 function createMonolithFunction(
   stack: Stack,
   id: string,
-  props: ApiFunctionProps
+  props: ApiFunctionProps,
 ) {
   const fn = new lambda.DockerImageFunction(stack, id, {
     functionName: props.functionName,
@@ -119,7 +119,7 @@ function createMonolithFunction(
       {
         platform: Platform.LINUX_ARM64,
         cmd: [props.handler],
-      }
+      },
     ),
     tracing: lambda.Tracing.ACTIVE,
     logRetention: logs.RetentionDays.SIX_MONTHS,
@@ -142,6 +142,6 @@ function getSsmSecret(stack: Stack, name: string) {
     `${name}SsmSecret`,
     {
       parameterName: `/sst/cloud/${stack.stage}/Secret/${name}/value`,
-    }
+    },
   );
 }
