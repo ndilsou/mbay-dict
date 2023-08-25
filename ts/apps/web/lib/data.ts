@@ -1,7 +1,7 @@
 import { readFileSync, readSync } from "fs";
 import { z } from "zod";
 
-export const EntrySchema = z.object({
+const EntrySchema = z.object({
   id: z.number(),
   created_at: z.string(),
   updated_at: z.string(),
@@ -15,7 +15,7 @@ export const EntrySchema = z.object({
 
 export type Entry = z.infer<typeof EntrySchema>;
 
-export const ExampleSchema = z.object({
+const ExampleSchema = z.object({
   id: z.number(),
   created_at: z.string(),
   updated_at: z.string(),
@@ -28,19 +28,19 @@ export const ExampleSchema = z.object({
 
 export type Example = z.infer<typeof ExampleSchema>;
 
-export const entriesDataset = EntrySchema.array().parse(
-  JSON.parse(
-    readFileSync("./data/entries.json", {
-      encoding: "utf-8",
-    }),
-  ),
-);
-export const examplesDataset = ExampleSchema.array().parse(
-  JSON.parse(
-    readFileSync("./data/examples.json", {
-      encoding: "utf-8",
-    }),
-  ),
-);
+// const entriesDataset = EntrySchema.array().parse(
+//   JSON.parse(
+//     readFileSync("./data/entries.json", {
+//       encoding: "utf-8",
+//     })
+//   )
+// );
+// const examplesDataset = ExampleSchema.array().parse(
+//   JSON.parse(
+//     readFileSync("./data/examples.json", {
+//       encoding: "utf-8",
+//     })
+//   )
+// );
 
 console.log("data loaded");

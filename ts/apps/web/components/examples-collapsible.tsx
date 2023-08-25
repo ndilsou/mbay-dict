@@ -35,9 +35,9 @@ export function ExamplesCollapsible({
 
   let label: string;
   if (count === 1) {
-    label = "Voir l'example";
+    label = "Voir l'exemple";
   } else {
-    label = `Voir les ${count} examples`;
+    label = `Voir les ${count} exemples`;
   }
 
   return (

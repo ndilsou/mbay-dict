@@ -6,7 +6,6 @@ export async function Examples({
   language,
 }: {
   entryId: string;
-  // examples: Example[];
   language: "french" | "english";
 }) {
   const { examples } = await getExamples(entryId);

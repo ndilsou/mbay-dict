@@ -5,6 +5,7 @@ import {
   StackContext,
   EventBus,
   Bucket,
+  Config,
 } from "sst/constructs";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
@@ -23,35 +24,6 @@ export function Main({ stack }: StackContext) {
   });
   const root = workspaceRoot();
 
-  // const environment = {
-  //   OPENAI_API_KEY: getSsmSecret(stack, "OPENAI_API_KEY"),
-  // };
-
-  // const httpApi = createHttpApi(stack, {
-  //   root,
-  //   parameters: environment,
-  // });
-
-  // const site = new NextjsSite(stack, "web", {
-  //   path: "../web/",
-  //   runtime: "nodejs18.x",
-  //   customDomain: {
-  //     domainName: getWebDomainName(stack.stage),
-  //     hostedZone: "tranquil.voltor.be",
-  //   },
-  //   environment: {
-  //     NEXT_PUBLIC_HTTP_API_URL: httpApi.url,
-  //     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: getEnv(
-  //       "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
-  //     ),
-  //     CLERK_SECRET_KEY: getEnv("CLERK_SECRET_KEY"),
-  //     API_KEY: getEnv("API_KEY"),
-  //     NEXT_PUBLIC_STAGE: stack.stage,
-  //     CLERK_TRUST_HOST: "true",
-  //   },
-  //   bind: [httpApi],
-  // });
-
   const publicFiles = new Bucket(stack, "publicFiles", {
     cdk: {
       bucket: {
@@ -59,11 +31,27 @@ export function Main({ stack }: StackContext) {
       },
     },
   });
+  const MONGODB_URI = new Config.Secret(stack, "MONGODB_URI");
+
+
+  const site = new NextjsSite(stack, "web", {
+    path: "../web/",
+    runtime: "nodejs18.x",
+    // customDomain: {
+    //   domainName: getWebDomainName(stack.stage),
+    //   hostedZone: "tranquil.voltor.be",
+    // },
+    environment: {
+      MONGODB_URI: getEnv("MONGODB_URI"),
+      NEXT_PUBLIC_BUCKET_NAME:publicFiles.bucketName,
+    },
+    bind: [MONGODB_URI]
+  });
 
   stack.addOutputs({
     publicFilesBucketName: publicFiles.bucketName,
     // HttpApiUrl: httpApi.url,
-    // WebsiteUrl: site.url,
+    WebsiteUrl: site.url,
     // WebsiteDomainName: site.customDomainUrl,
   });
 }

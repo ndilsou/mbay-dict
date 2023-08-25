@@ -30,6 +30,14 @@ function Entries({ entries }: { entries: IndexEntry[] }) {
   return (
     <div className="flex flex-col gap-2 mt-4">
       {groupedEntries.map((group) => (
+        <LetterGroup key={group.key} group={group} />
+      ))}
+    </div>
+  );
+}
+
+function LetterGroup({ group }: { group: { key: string; entries: IndexEntry[] }}) {
+    return (
         <section key={group.key}>
           <Link href={`/#${group.key}`}>
             <h2 className="text-4xl font-bold capitalize" id={group.key}>
@@ -42,9 +50,7 @@ function Entries({ entries }: { entries: IndexEntry[] }) {
             ))}
           </div>
         </section>
-      ))}
-    </div>
-  );
+    )
 }
 
 function Alphabet() {
