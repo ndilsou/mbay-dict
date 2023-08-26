@@ -2,12 +2,18 @@ import { Examples } from "@/components/examples";
 import { Loading } from "@/components/loading";
 import { PageContainer } from "@/components/page-container";
 import { SoundButton } from "@/components/sound-button";
-import { getEntry, type Entry } from "@/lib/db";
+import { getEntry, type Entry, listEntryIds } from "@/lib/db";
 import { langCodeToName } from "@/lib/utils";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BackButton } from "../../../../components/back-button";
+
+// Return a list of `params` to populate the [lang] and [entryId] dynamic segment
+export async function generateStaticParams() {
+  const ids = await listEntryIds();
+  return ids.map((id) => ({ params: { entryId: id, lang: "french" } }));
+}
 
 export default async function Page({
   params: { entryId, lang },
