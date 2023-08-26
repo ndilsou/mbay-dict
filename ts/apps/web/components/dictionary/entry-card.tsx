@@ -7,6 +7,7 @@ import type { IndexEntry } from "@/lib/db";
 import { ExamplesCollapsible } from "./examples-collapsible";
 import { Suspense } from "react";
 import { Loading } from "../loading";
+import { Examples } from "../examples";
 
 export function EntryCard({
   entry,
@@ -37,13 +38,13 @@ export function EntryCard({
       </CardHeader>
       <CardContent>
         <p className="text-lg">{translation}</p>
-        {/* <Suspense fallback={<Loading className="mt-2" />}>
-          <ExamplesCollapsible
-            className="mt-2"
-            entry={entry}
-            language={language}
-          />
-        </Suspense> */}
+        {/* <Suspense fallback={<Loading className="mt-2" />}> */}
+        <ExamplesCollapsible className="mt-2" entry={entry} language={language}>
+          <Suspense fallback={<Loading />}>
+            <Examples entryId={entry._id} language={language} />
+          </Suspense>
+        </ExamplesCollapsible>
+        {/* </Suspense> */}
       </CardContent>
     </Card>
   );

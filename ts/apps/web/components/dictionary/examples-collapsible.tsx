@@ -1,3 +1,5 @@
+"use client";
+
 import { ChevronsUpDown } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
@@ -16,10 +18,12 @@ export async function ExamplesCollapsible({
   entry,
   language,
   className,
+  children,
 }: {
   entry: IndexEntry;
   language: "french" | "english";
   className?: string;
+  children?: React.ReactNode;
 }) {
   const count = entry.examples.length;
   if (count === 0) {
@@ -56,9 +60,10 @@ export async function ExamplesCollapsible({
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent className="gap-1 mt-2">
-        <Suspense fallback={<Loading />}>
+        {children}
+        {/* <Suspense fallback={<Loading />}>
           <Examples entryId={entry._id} language={language} />
-        </Suspense>
+        </Suspense> */}
       </CollapsibleContent>
     </Collapsible>
   );
