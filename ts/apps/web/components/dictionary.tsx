@@ -63,7 +63,7 @@ function LetterGroup({
       </Link>
       <div className="flex flex-col gap-2 mt-4">
         {/* <Suspense fallback={<Loading />}> */}
-          {/* <EntryGroup entries={group.entries} /> */}
+          <EntryGroup entries={group.entries} />
           {/* {group.entries.map((entry) => (
           <EntryCard key={entry._id} entry={entry} language="french" />
         ))} */}
@@ -84,7 +84,7 @@ function EntryGroup({
     <div className={cn("flex flex-col gap-2", className)}>
       {entries.map((entry) => (
         <EntryCard key={entry._id} entry={entry} language="french" />
-      ))}
+      )).slice(0, 2)}
     </div>
   );
 }
