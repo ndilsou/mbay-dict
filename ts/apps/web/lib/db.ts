@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { MongoClient, ObjectId } from "mongodb";
 import { z } from "zod";
 import { env } from "./env";
@@ -58,7 +59,7 @@ export const IndexEntrySchema = z.object({
 
 export type IndexEntry = z.infer<typeof IndexEntrySchema>;
 
-export async function listEntriesIndex(): Promise<IndexEntry[]> {
+export const listEntriesIndex = cache(async (): Promise<IndexEntry[]> => {
   const db = getDB();
   const entries = await db
     .collection("entries")
@@ -75,14 +76,14 @@ export async function listEntriesIndex(): Promise<IndexEntry[]> {
             _id: 1,
           },
         },
-      },
+      }
     )
     .toArray();
 
   return IndexEntrySchema.array().parse(entries);
-}
+});
 
-export async function getEntry(id: string): Promise<Entry> {
+export const getEntry = cache(async (id: string): Promise<Entry> => {
   const db = getDB();
   const entry = await db
     .collection("entries")
@@ -91,7 +92,7 @@ export async function getEntry(id: string): Promise<Entry> {
     throw new Error("Entry not found");
   }
   return EntrySchema.parse(entry);
-}
+});
 
 export const ExamplesSchema = z.object({
   _id: ObjectIdSchema,
@@ -100,7 +101,7 @@ export const ExamplesSchema = z.object({
 
 export type EntryExamples = z.infer<typeof ExamplesSchema>;
 
-export async function getExamples(id: string): Promise<EntryExamples> {
+export const getExamples = cache(async (id: string): Promise<EntryExamples> => {
   const db = getDB();
   const result = await db
     .collection("entries")
@@ -109,4 +110,4 @@ export async function getExamples(id: string): Promise<EntryExamples> {
     throw new Error("Entry not found");
   }
   return ExamplesSchema.parse(result);
-}
+});

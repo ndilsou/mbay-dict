@@ -33,7 +33,6 @@ export function Main({ stack }: StackContext) {
   });
   const MONGODB_URI = new Config.Secret(stack, "MONGODB_URI");
 
-
   const site = new NextjsSite(stack, "web", {
     path: "../web/",
     runtime: "nodejs18.x",
@@ -43,9 +42,9 @@ export function Main({ stack }: StackContext) {
     // },
     environment: {
       MONGODB_URI: getEnv("MONGODB_URI"),
-      NEXT_PUBLIC_BUCKET_NAME:publicFiles.bucketName,
+      NEXT_PUBLIC_BUCKET_NAME: publicFiles.bucketName,
     },
-    bind: [MONGODB_URI]
+    bind: [MONGODB_URI],
   });
 
   stack.addOutputs({

@@ -7,6 +7,8 @@ import { SearchResult } from "../components/search-result";
 import { type IndexEntry } from "@/lib/db";
 import { Alphabet } from "./alphabet";
 import { cn } from "@/lib/utils";
+import { Suspense } from "react";
+import { Loading } from "./loading";
 
 export default function Dictionary({
   entries,
@@ -15,13 +17,16 @@ export default function Dictionary({
   entries: IndexEntry[];
   searchTerm?: string;
 }) {
+  console.log("load starting", entries.length, "items");
   return (
     <PageContainer>
       <h6 id="main-title" className="" />
       <LetterScroll className="z-40 fixed top-1/2 transform -translate-y-1/2 right-4" />
       {searchTerm && <SearchResult hits={entries.length} term={searchTerm} />}
       <Alphabet />
-      <Entries className="mt-4" entries={entries} />
+      {/* <Suspense fallback={<Loading />}> */}
+        <Entries className="mt-4" entries={entries} />
+      {/* </Suspense> */}
     </PageContainer>
   );
 }
@@ -34,6 +39,7 @@ function Entries({
   className?: string;
 }) {
   const groupedEntries = createGroups(entries);
+  console.log("grouping complete", groupedEntries.length, "groups");
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       {groupedEntries.map((group) => (
@@ -56,11 +62,30 @@ function LetterGroup({
         </h2>
       </Link>
       <div className="flex flex-col gap-2 mt-4">
-        {group.entries.map((entry) => (
+        {/* <Suspense fallback={<Loading />}> */}
+          <EntryGroup entries={group.entries} />
+          {/* {group.entries.map((entry) => (
           <EntryCard key={entry._id} entry={entry} language="french" />
-        ))}
+        ))} */}
+        {/* </Suspense> */}
       </div>
     </section>
+  );
+}
+
+function EntryGroup({
+  entries,
+  className,
+}: {
+  entries: IndexEntry[];
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex flex-col gap-2", className)}>
+      {entries.map((entry) => (
+        <EntryCard key={entry._id} entry={entry} language="french" />
+      ))}
+    </div>
   );
 }
 
