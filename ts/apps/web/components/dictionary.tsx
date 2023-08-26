@@ -84,7 +84,7 @@ function EntryGroup({
     <div className={cn("flex flex-col gap-2", className)}>
       {entries.map((entry) => (
         <EntryCard key={entry._id} entry={entry} language="french" />
-      )).slice(0, 2)}
+      ))}
     </div>
   );
 }

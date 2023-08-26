@@ -5,6 +5,8 @@ import { languageToCode } from "@/lib/utils";
 import { SoundButton } from "./sound-button";
 import type { IndexEntry } from "@/lib/db";
 import { ExamplesCollapsible } from "./examples-collapsible";
+import { Suspense } from "react";
+import { Loading } from "./loading";
 
 export function EntryCard({
   entry,
@@ -35,11 +37,13 @@ export function EntryCard({
       </CardHeader>
       <CardContent>
         <p className="text-lg">{translation}</p>
-        <ExamplesCollapsible
-          className="mt-2"
-          entry={entry}
-          language={language}
-        />
+        <Suspense fallback={<Loading />}>
+          <ExamplesCollapsible
+            className="mt-2"
+            entry={entry}
+            language={language}
+          />
+        </Suspense>
       </CardContent>
     </Card>
   );
