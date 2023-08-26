@@ -1,11 +1,7 @@
 import { listEntriesIndex } from "@/lib/db";
 import Dictionary from "@/components/dictionary";
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Record<string, string>;
-}) {
+export default async function Home() {
   const entries = await listEntriesIndex();
 
   return <Dictionary entries={entries} />;

@@ -1,11 +1,12 @@
 import { EntryCard } from "@/components/entry-card";
 import { LetterScroll } from "@/components/letter-scroll";
 import { PageContainer } from "@/components/page-container";
-import { LETTERS } from "@/lib/constants";
 import Link from "next/link";
 import * as R from "remeda";
 import { SearchResult } from "../components/search-result";
-import { listEntriesIndex, type IndexEntry, type Entry } from "@/lib/db";
+import { type IndexEntry } from "@/lib/db";
+import { Alphabet } from "./alphabet";
+import { cn } from "@/lib/utils";
 
 export default function Dictionary({
   entries,
@@ -20,15 +21,21 @@ export default function Dictionary({
       <LetterScroll className="z-40 fixed top-1/2 transform -translate-y-1/2 right-4" />
       {searchTerm && <SearchResult hits={entries.length} term={searchTerm} />}
       <Alphabet />
-      <Entries entries={entries} />
+      <Entries className="mt-4" entries={entries} />
     </PageContainer>
   );
 }
 
-function Entries({ entries }: { entries: IndexEntry[] }) {
+function Entries({
+  entries,
+  className,
+}: {
+  entries: IndexEntry[];
+  className?: string;
+}) {
   const groupedEntries = createGroups(entries);
   return (
-    <div className="flex flex-col gap-2 mt-4">
+    <div className={cn("flex flex-col gap-2", className)}>
       {groupedEntries.map((group) => (
         <LetterGroup key={group.key} group={group} />
       ))}
@@ -36,36 +43,24 @@ function Entries({ entries }: { entries: IndexEntry[] }) {
   );
 }
 
-function LetterGroup({ group }: { group: { key: string; entries: IndexEntry[] }}) {
-    return (
-        <section key={group.key}>
-          <Link href={`/#${group.key}`}>
-            <h2 className="text-4xl font-bold capitalize" id={group.key}>
-              {group.key}
-            </h2>
-          </Link>
-          <div className="flex flex-col gap-2 mt-4">
-            {group.entries.map((entry) => (
-              <EntryCard key={entry._id} entry={entry} language="french" />
-            ))}
-          </div>
-        </section>
-    )
-}
-
-function Alphabet() {
+function LetterGroup({
+  group,
+}: {
+  group: { key: string; entries: IndexEntry[] };
+}) {
   return (
-    <div className="flex flex-wrap justify-center mt-8 gap-4">
-      {LETTERS.map((letter) => (
-        <Link
-          className="w-12 flex justify-center items-center p-4 bg-primary rounded-lg hover:bg-primary/50 capitalize text-primary-foreground"
-          key={letter}
-          href={`#${letter}`}
-        >
-          {letter}
-        </Link>
-      ))}
-    </div>
+    <section key={group.key}>
+      <Link href={`/#${group.key}`}>
+        <h2 className="text-4xl font-bold capitalize" id={group.key}>
+          {group.key}
+        </h2>
+      </Link>
+      <div className="flex flex-col gap-2 mt-4">
+        {group.entries.map((entry) => (
+          <EntryCard key={entry._id} entry={entry} language="french" />
+        ))}
+      </div>
+    </section>
   );
 }
 

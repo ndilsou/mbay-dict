@@ -9,9 +9,9 @@ import { listEntriesIndex, type IndexEntry, type Entry } from "@/lib/db";
 import Dictionary from "@/components/dictionary";
 
 export default async function Home({
-  params: {searchTerm},
+  params: { searchTerm },
 }: {
-  params: {searchTerm: string};
+  params: { searchTerm: string };
 }) {
   const entriesIndex = await listEntriesIndex();
   let entries: IndexEntry[];
@@ -24,9 +24,7 @@ export default async function Home({
     entries = entriesIndex;
   }
 
-  return (
-    <Dictionary entries={entries} searchTerm={searchTerm} />
-  );
+  return <Dictionary entries={entries} searchTerm={searchTerm} />;
 }
 
 function Entries({ entries }: { entries: IndexEntry[] }) {
