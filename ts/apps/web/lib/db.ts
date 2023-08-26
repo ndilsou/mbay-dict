@@ -111,3 +111,21 @@ export const getExamples = cache(async (id: string): Promise<EntryExamples> => {
   }
   return ExamplesSchema.parse(result);
 });
+
+export const listEntryIds = cache(async (): Promise<string[]> => {
+  const db = getDB();
+  const entries = await db
+    .collection("entries")
+    .find(
+      {},
+      {
+        projection: {
+          _id: true,
+        },
+      }
+    )
+    .toArray();
+
+  const ids = entries.map((entry) => entry._id);
+  return ObjectIdSchema.array().parse(ids);
+});
