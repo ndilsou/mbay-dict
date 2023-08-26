@@ -1,16 +1,16 @@
 import { ChevronsUpDown } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import type { IndexEntry } from "@/lib/db";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "./ui/collapsible";
-import { Examples } from "./examples";
-import { Separator } from "./ui/separator";
+} from "../ui/collapsible";
+import { Examples } from "../examples";
+import { Separator } from "../ui/separator";
 import { Suspense } from "react";
-import { Loading } from "./loading";
+import { Loading } from "../loading";
 
 export async function ExamplesCollapsible({
   entry,

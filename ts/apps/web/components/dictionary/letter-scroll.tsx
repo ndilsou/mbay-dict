@@ -1,7 +1,7 @@
 import { LETTERS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Home } from "lucide-react";
 
 export function LetterScroll({ className }: { className?: string }) {
@@ -9,7 +9,7 @@ export function LetterScroll({ className }: { className?: string }) {
     <ol
       className={cn(
         "flex flex-col items-center justify-center gap-1",
-        className,
+        className
       )}
     >
       <li>

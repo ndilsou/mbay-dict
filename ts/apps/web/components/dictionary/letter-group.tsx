@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { EntryCard } from "./entry-card";
 import { Suspense } from "react";
-import { Loading } from "./loading";
+import { Loading } from "../loading";
 
 export function LetterGroup({
   group,

@@ -1,5 +1,5 @@
-import { EntryCard } from "@/components/entry-card";
-import { LetterScroll } from "@/components/letter-scroll";
+import { EntryCard } from "@/components/dictionary/entry-card";
+import { LetterScroll } from "@/components/dictionary/letter-scroll";
 import { PageContainer } from "@/components/page-container";
 import { LETTERS } from "@/lib/constants";
 import Link from "next/link";
@@ -75,12 +75,12 @@ function createGroups(entries: IndexEntry[]) {
     return {
       key: key,
       entries: groups[key].sort((a, b) =>
-        a.french_translation.localeCompare(b.french_translation),
+        a.french_translation.localeCompare(b.french_translation)
       ),
     };
   });
   const sortedGroupedEntries = groupedEntries.sort((a, b) =>
-    a.key.localeCompare(b.key),
+    a.key.localeCompare(b.key)
   );
   return sortedGroupedEntries;
 }

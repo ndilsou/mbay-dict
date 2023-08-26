@@ -1,5 +1,5 @@
-import { Alphabet } from "@/components/alphabet";
-import { LetterScroll } from "@/components/letter-scroll";
+import { Alphabet } from "@/components/dictionary/alphabet";
+import { LetterScroll } from "@/components/dictionary/letter-scroll";
 import { Loading } from "@/components/loading";
 import { PageContainer } from "@/components/page-container";
 

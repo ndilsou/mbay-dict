@@ -1,12 +1,12 @@
-import { Card, CardContent, CardHeader } from "./ui/card";
+import { Card, CardContent, CardHeader } from "../ui/card";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { languageToCode } from "@/lib/utils";
-import { SoundButton } from "./sound-button";
+import { SoundButton } from "../sound-button";
 import type { IndexEntry } from "@/lib/db";
 import { ExamplesCollapsible } from "./examples-collapsible";
 import { Suspense } from "react";
-import { Loading } from "./loading";
+import { Loading } from "../loading";
 
 export function EntryCard({
   entry,
@@ -37,13 +37,13 @@ export function EntryCard({
       </CardHeader>
       <CardContent>
         <p className="text-lg">{translation}</p>
-        <Suspense fallback={<Loading className="mt-2" />}>
+        {/* <Suspense fallback={<Loading className="mt-2" />}>
           <ExamplesCollapsible
             className="mt-2"
             entry={entry}
             language={language}
           />
-        </Suspense>
+        </Suspense> */}
       </CardContent>
     </Card>
   );
