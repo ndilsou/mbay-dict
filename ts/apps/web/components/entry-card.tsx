@@ -37,7 +37,7 @@ export function EntryCard({
       </CardHeader>
       <CardContent>
         <p className="text-lg">{translation}</p>
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading className="mt-2" />}>
           <ExamplesCollapsible
             className="mt-2"
             entry={entry}

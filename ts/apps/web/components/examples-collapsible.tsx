@@ -12,7 +12,7 @@ import { Separator } from "./ui/separator";
 import { Suspense } from "react";
 import { Loading } from "./loading";
 
-export function ExamplesCollapsible({
+export async function ExamplesCollapsible({
   entry,
   language,
   className,
