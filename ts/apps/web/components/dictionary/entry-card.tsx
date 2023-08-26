@@ -38,13 +38,13 @@ export function EntryCard({
       </CardHeader>
       <CardContent>
         <p className="text-lg">{translation}</p>
-        {/* <Suspense fallback={<Loading className="mt-2" />}> */}
-        <ExamplesCollapsible className="mt-2" entry={entry} language={language}>
+        <Suspense fallback={<Loading className="mt-2" />}>
+          {/* <ExamplesCollapsible className="mt-2" entry={entry} language={language}> */}
           <Suspense fallback={<Loading />}>
             <Examples entryId={entry._id} language={language} />
           </Suspense>
-        </ExamplesCollapsible>
-        {/* </Suspense> */}
+          {/* </ExamplesCollapsible> */}
+        </Suspense>
       </CardContent>
     </Card>
   );
