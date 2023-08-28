@@ -31,26 +31,27 @@ export function Main({ stack }: StackContext) {
       },
     },
   });
-  const MONGODB_URI = new Config.Secret(stack, "MONGODB_URI");
 
-  const site = new NextjsSite(stack, "web", {
-    path: "../web/",
-    runtime: "nodejs18.x",
-    // customDomain: {
-    //   domainName: getWebDomainName(stack.stage),
-    //   hostedZone: "tranquil.voltor.be",
-    // },
-    environment: {
-      MONGODB_URI: getEnv("MONGODB_URI"),
-      NEXT_PUBLIC_BUCKET_NAME: publicFiles.bucketName,
-    },
-    bind: [MONGODB_URI],
-  });
+  // const MONGODB_URI = new Config.Secret(stack, "MONGODB_URI");
+
+  // const site = new NextjsSite(stack, "web", {
+  //   path: "../web/",
+  //   runtime: "nodejs18.x",
+  //   // customDomain: {
+  //   //   domainName: getWebDomainName(stack.stage),
+  //   //   hostedZone: "tranquil.voltor.be",
+  //   // },
+  //   environment: {
+  //     MONGODB_URI: getEnv("MONGODB_URI"),
+  //     NEXT_PUBLIC_BUCKET_NAME: publicFiles.bucketName,
+  //   },
+  //   bind: [MONGODB_URI],
+  // });
 
   stack.addOutputs({
     publicFilesBucketName: publicFiles.bucketName,
     // HttpApiUrl: httpApi.url,
-    WebsiteUrl: site.url,
+    // WebsiteUrl: site.url,
     // WebsiteDomainName: site.customDomainUrl,
   });
 }
@@ -61,7 +62,7 @@ type ApiInput = {
 
 function createHttpApi(
   stack: Stack,
-  { parameters: parameters, root }: ApiInput,
+  { parameters: parameters, root }: ApiInput
 ) {
   const fn = createMonolithFunction(stack, "httpApiFn", {
     functionName: `${stack.stage}-http-api-fn`,
@@ -94,7 +95,7 @@ type ApiFunctionProps = {
 function createMonolithFunction(
   stack: Stack,
   id: string,
-  props: ApiFunctionProps,
+  props: ApiFunctionProps
 ) {
   const fn = new lambda.DockerImageFunction(stack, id, {
     functionName: props.functionName,
@@ -106,7 +107,7 @@ function createMonolithFunction(
       {
         platform: Platform.LINUX_ARM64,
         cmd: [props.handler],
-      },
+      }
     ),
     tracing: lambda.Tracing.ACTIVE,
     logRetention: logs.RetentionDays.SIX_MONTHS,
@@ -129,6 +130,6 @@ function getSsmSecret(stack: Stack, name: string) {
     `${name}SsmSecret`,
     {
       parameterName: `/sst/cloud/${stack.stage}/Secret/${name}/value`,
-    },
+    }
   );
 }
