@@ -25,6 +25,7 @@ export async function LetterEntries({
   return (
     <div className={cn("flex flex-col gap-2 w-full", className)}>
       <LetterGroup
+        language={language}
         group={{
           key: letter,
           entries,

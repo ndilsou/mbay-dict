@@ -5,9 +5,11 @@ import * as R from "remeda";
 
 export function Entries({
   entries,
+  language = "french",
   className,
 }: {
   entries: IndexEntry[];
+  language: "french" | "english";
   className?: string;
 }) {
   const groupedEntries = createGroups(entries);
@@ -15,7 +17,7 @@ export function Entries({
   return (
     <div className={cn("flex flex-col gap-2 w-full", className)}>
       {groupedEntries.map((group) => (
-        <LetterGroup key={group.key} group={group} />
+        <LetterGroup key={group.key} language={language} group={group} />
       ))}
     </div>
   );

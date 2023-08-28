@@ -6,15 +6,21 @@ import { Suspense } from "react";
 import { Loading } from "../loading";
 
 export function LetterGroup({
+  language,
   group,
 }: {
+  language: "french" | "english";
   group: { key: string; entries: IndexEntry[] };
 }) {
+  let label = group.key;
+  if (group.key === "MISC" && language === "french") {
+    label = "Autres";
+  }
   return (
     <section key={group.key}>
       <Link href={`/#${group.key}`}>
         <h2 className="text-4xl font-bold capitalize" id={group.key}>
-          {group.key}
+          {label}
         </h2>
       </Link>
       <div className="flex flex-col gap-2 mt-4">

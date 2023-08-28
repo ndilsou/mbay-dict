@@ -26,7 +26,7 @@ export default function Dictionary({
       />
       {searchTerm && <SearchResult hits={entries.length} term={searchTerm} />}
       <Alphabet language={language} />
-      <Entries className="mt-4" entries={entries} />
+      <Entries language={language} className="mt-4" entries={entries} />
     </PageContainer>
   );
 }
