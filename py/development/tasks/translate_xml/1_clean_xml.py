@@ -4,6 +4,7 @@ Takes the raw XML from John Keegan's original english dictionary and:
 2. converts it to a JSON format that is easier to work with.
 """
 
+from dataclasses import asdict
 import json
 from pathlib import Path
 import sys
@@ -27,6 +28,7 @@ def main(filename: str):
     filepath = Path(filename)
     xml = filepath.read_text(encoding="utf-8")
     dataset = parser.from_string(xml, NewDataSet)
+
     for entry in track(dataset.entry, description="Processing entries..."):
         correct_entry(entry)
 
@@ -44,48 +46,62 @@ def main(filename: str):
         correct_expression(expression)
 
     # Create dictionaries for easy lookup
-    entries_dict = {entry.entrycode: entry for entry in dataset.entry}
-    translations_dict = {
-        translation.entrycode: translation for translation in dataset.translations
-    }
-    samples_dict = {sample.entrycode: sample for sample in dataset.samples}
-    expressions_dict = {
-        expression.entrycode: expression for expression in dataset.expressions
-    }
+    entries_dict = {entry.entrycode: asdict(entry) for entry in dataset.entry}
+    translations = [asdict(translation) for translation in dataset.translations]
+    samples = [asdict(sample) for sample in dataset.samples]
+    expressions = [asdict(expression) for expression in dataset.expressions]
+
+    records = {}
 
     # Merge entries and translations
-    for entry_code, entry in entries_dict.items():
-        translation = translations_dict.get(entry_code)
-        if translation:
-            entry.update(translation)
+    for translation in translations:
+        item = translation.copy()
+        if translation["entrycode"] not in entries_dict:
+            logger.warning(
+                f"Translation {translation['entrycode']} not found in entries",
+                translation=translation,
+            )
+            continue
+
+        entry = entries_dict[translation["entrycode"]]
+        item.update(entry)
+        item["samples"] = []
+        item["expressions"] = []
+        records[item["entrytranc"]] = item
 
     # Link expressions and samples to their corresponding entries
-    for expression_code, expression in expressions_dict.items():
-        entry = entries_dict.get(expression_code)
-        if entry:
-            expression.entry = entry
+    for expression in expressions:
+        record = records.get(expression["entrytranc"])
+        if record is None:
+            logger.warning(
+                f"Expression with parent id {expression['entrytranc']} not found in records",
+                expression=expression,
+            )
+            continue
+        record["expressions"].append(expression)
 
-    for sample_code, sample in samples_dict.items():
-        entry = entries_dict.get(sample_code)
-        if entry:
-            sample.entry = entry
+    for sample in samples:
+        record = records.get(sample["entrytranc"])
+        if record is None:
+            logger.warning(
+                f"Sample with parent id {sample['entrytranc']} not found in records",
+                sample=sample,
+            )
+            continue
+        record["samples"].append(sample)
 
-    # Dictify and push to a file as json
-    data_dict = {
-        "entries": entries_dict,
-        "translations": translations_dict,
-        "samples": samples_dict,
-        "expressions": expressions_dict,
-    }
-    with open("output.json", "w") as json_file:
-        json.dump(data_dict, json_file)
+    with open("output.json", "w", encoding="utf-8") as json_file:
+        json.dump(list(records.values()), json_file, ensure_ascii=False, indent=2)
 
 
 def correct_translation(
     translation: NewDataSet.Translations,
 ) -> NewDataSet.Translations:
     try:
+        translation.trancode = fix_code(translation.trancode)
         translation.entrycode = fix_code(translation.entrycode)
+        translation.entrytranc = fix_code(translation.entrytranc)
+        translation.relword = correct_mbay_string(translation.relword)
     except:
         rprint(translation)
         raise
@@ -95,6 +111,8 @@ def correct_translation(
 def correct_sample(sample: NewDataSet.Samples) -> NewDataSet.Samples:
     try:
         sample.entrycode = fix_code(sample.entrycode)
+        sample.entrytranc = fix_code(sample.entrytranc)
+        sample.trancode = fix_code(sample.trancode)
         sample.samplesent = correct_mbay_string(sample.samplesent)
     except:
         rprint(sample)
@@ -129,7 +147,7 @@ def fix_code(code: str | None) -> str:
     if code is None:
         return None
 
-    return int(code.strip())
+    return code.strip()
 
 
 if __name__ == "__main__":

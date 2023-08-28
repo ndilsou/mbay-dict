@@ -1,6 +1,9 @@
 """
 The original XML database has incorrect characters in it. This file contains a corrector for these characters.
 """
+from typing import overload
+
+
 MAPPING = {
     # a
     "à": ["à"],
@@ -98,7 +101,19 @@ def create_reverse_mapping() -> dict[str, list[str]]:
 REVERSE_MAPPING = create_reverse_mapping()
 
 
+@overload
 def correct_mbay_string(s: str) -> str:
+    ...
+
+
+@overload
+def correct_mbay_string(s: None) -> None:
+    ...
+
+
+def correct_mbay_string(s: str | None) -> str | None:
+    if s is None:
+        return None
     for key, value in REVERSE_MAPPING.items():
         s = s.replace(key, value)
     return s
