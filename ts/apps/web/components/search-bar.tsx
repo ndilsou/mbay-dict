@@ -14,7 +14,6 @@ export function SearchBar() {
     const q = form.elements.search.value;
     if (!q) return;
 
-    console.log(q);
     router.push(`/s/${q}`);
     form.elements.search.value = "";
   }

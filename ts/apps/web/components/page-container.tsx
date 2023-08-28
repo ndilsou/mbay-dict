@@ -10,8 +10,8 @@ export function PageContainer({
   return (
     <div
       className={cn(
-        "relative flex flex-col items-center justify-start py-10 px-5 max-w-5xl bg-background mx-auto",
-        className,
+        "relative flex flex-col items-center justify-start py-10 px-5 max-w-5xl bg-background mx-auto min-h-full",
+        className
       )}
     >
       {children}

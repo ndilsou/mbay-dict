@@ -1,7 +1,10 @@
+import "server-only";
+
 import { cache } from "react";
 import { MongoClient, ObjectId } from "mongodb";
 import { z } from "zod";
 import { env } from "./env";
+import { INDEX_KEYS, IndexKeySchema, type IndexKey } from "./constants";
 
 const client = new MongoClient(env.MONGODB_URI, {
   tls: true,
@@ -33,13 +36,18 @@ export const ExampleSchema = z.object({
 
 export type Example = z.infer<typeof ExampleSchema>;
 
+export const TranslationSchema = z.object({
+  key: IndexKeySchema,
+  translation: z.string(),
+});
+
 export const EntrySchema = z.object({
   _id: ObjectIdSchema,
   created_at: z.string(),
   updated_at: z.string(),
   headword: z.string(),
-  english_translation: z.string(),
-  french_translation: z.string(),
+  french: TranslationSchema,
+  english: TranslationSchema,
   part_of_speech: z.string().nullable().default(null),
   sound_filename: z.string().nullable().default(null),
   examples: z.array(ExampleSchema),
@@ -50,14 +58,25 @@ export type Entry = z.infer<typeof EntrySchema>;
 export const IndexEntrySchema = z.object({
   _id: ObjectIdSchema,
   headword: z.string(),
-  english_translation: z.string(),
-  french_translation: z.string(),
+  french: TranslationSchema,
+  english: TranslationSchema,
   part_of_speech: z.string().nullable().default(null),
   sound_filename: z.string().nullable().default(null),
   examples: z.array(z.object({ _id: ObjectIdSchema })),
 });
 
 export type IndexEntry = z.infer<typeof IndexEntrySchema>;
+
+const ENTRY_INDEX_PROJECTION = {
+  headword: true,
+  english: true,
+  french: true,
+  part_of_speech: true,
+  sound_filename: true,
+  examples: {
+    _id: 1,
+  },
+};
 
 export const listEntriesIndex = cache(async (): Promise<IndexEntry[]> => {
   const db = getDB();
@@ -66,22 +85,61 @@ export const listEntriesIndex = cache(async (): Promise<IndexEntry[]> => {
     .find(
       {},
       {
-        projection: {
-          headword: true,
-          english_translation: true,
-          french_translation: true,
-          part_of_speech: true,
-          sound_filename: true,
-          examples: {
-            _id: 1,
-          },
-        },
+        projection: ENTRY_INDEX_PROJECTION,
       }
     )
     .toArray();
 
   return IndexEntrySchema.array().parse(entries);
 });
+
+export const listEntriesAtLetter = cache(
+  async ({
+    letter,
+    language = "french",
+  }: {
+    letter: IndexKey;
+    language?: "french" | "english";
+  }): Promise<IndexEntry[]> => {
+    const key = `${language}.key`;
+    const db = getDB();
+    const entries = await db
+      .collection("entries")
+      .find(
+        { [key]: letter },
+        {
+          projection: ENTRY_INDEX_PROJECTION,
+        }
+      )
+      .toArray();
+
+    return IndexEntrySchema.array().parse(entries);
+  }
+);
+
+export const searchEntries = cache(
+  async ({
+    searchTerm,
+    language = "french",
+  }: {
+    language?: "french" | "english";
+    searchTerm: string;
+  }): Promise<IndexEntry[]> => {
+    const key = `${language}.translation`;
+    const db = getDB();
+    const entries = await db
+      .collection("entries")
+      .find(
+        { [key]: { $regex: `${searchTerm}` } },
+        {
+          projection: ENTRY_INDEX_PROJECTION,
+        }
+      )
+      .toArray();
+
+    return IndexEntrySchema.array().parse(entries);
+  }
+);
 
 export const getEntry = cache(async (id: string): Promise<Entry> => {
   const db = getDB();

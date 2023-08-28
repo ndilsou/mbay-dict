@@ -1,13 +1,14 @@
 import { Card, CardContent, CardHeader } from "../ui/card";
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { languageToCode } from "@/lib/utils";
-import { SoundButton } from "../sound-button";
+import { SoundButton } from "@/components/sound-button";
 import type { IndexEntry } from "@/lib/db";
-import { ExamplesCollapsible } from "./examples-collapsible";
-import { Suspense } from "react";
-import { Loading } from "../loading";
-import { Examples } from "../examples";
+import {
+  ExamplesCollapsible,
+  ExamplesCollapsibleSkeleton,
+} from "./examples-collapsible";
+import { Skeleton } from "../ui/skeleton";
 
 export function EntryCard({
   entry,
@@ -16,19 +17,13 @@ export function EntryCard({
   entry: IndexEntry;
   language: "french" | "english";
 }) {
-  let translation: string;
-
-  if (language === "french") {
-    translation = entry.french_translation;
-  } else {
-    translation = entry.english_translation;
-  }
-
+  const translation = entry[language].translation;
+  const lang = languageToCode(language);
   return (
     <Card>
       <CardHeader className="flex-row justify-start gap-4 items-center py-2">
         <Button variant="link" className="p-0">
-          <Link href={`/entries/${languageToCode(language)}/${entry._id}`}>
+          <Link href={`/${lang}/entries/${entry._id}`}>
             <h1 className="text-2xl font-bold">{entry.headword}</h1>
           </Link>
         </Button>
@@ -38,13 +33,31 @@ export function EntryCard({
       </CardHeader>
       <CardContent>
         <p className="text-lg">{translation}</p>
-        <Suspense fallback={<Loading className="mt-2" />}>
-          {/* <ExamplesCollapsible className="mt-2" entry={entry} language={language}> */}
-          <Suspense fallback={<Loading />}>
-            <Examples entryId={entry._id} language={language} />
-          </Suspense>
-          {/* </ExamplesCollapsible> */}
-        </Suspense>
+        <ExamplesCollapsible
+          className="mt-2"
+          entry={entry}
+          language={language}
+        />
+      </CardContent>
+    </Card>
+  );
+}
+
+export function EntryCardSkeleton() {
+  return (
+    <Card>
+      <CardHeader className="flex-row justify-start gap-4 items-center py-2">
+        <Button variant="link" className="p-0">
+          <h1 className="text-2xl font-bold">
+            <Skeleton className="w-20 h-[32px]" />
+          </h1>
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {/* <p className="text-lg"> */}
+        <Skeleton className="h-[18px] w-52" />
+        {/* </p> */}
+        <ExamplesCollapsibleSkeleton className="mt-2" />
       </CardContent>
     </Card>
   );

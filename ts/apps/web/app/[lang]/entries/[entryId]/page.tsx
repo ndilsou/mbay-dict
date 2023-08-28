@@ -7,18 +7,17 @@ import { langCodeToName } from "@/lib/utils";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { BackButton } from "../../../../components/back-button";
+import { BackButton } from "@/components/back-button";
 
-// Return a list of `params` to populate the [lang] and [entryId] dynamic segment
 export async function generateStaticParams() {
   const ids = await listEntryIds();
-  return ids.map((id) => ({ params: { entryId: id, lang: "french" } }));
+  return ids.map((id) => ({ entryId: id, lang: "french" }));
 }
 
 export default async function Page({
   params: { entryId, lang },
 }: {
-  params: { entryId: string; lang: string };
+  params: { entryId: string; lang: "fr" | "en" };
 }) {
   let language: "french" | "english";
   try {
@@ -32,12 +31,7 @@ export default async function Page({
     notFound();
   }
 
-  let translation: string;
-  if (language === "french") {
-    translation = entry.french_translation;
-  } else {
-    translation = entry.english_translation;
-  }
+  const translation = entry[language].translation;
   return (
     <PageContainer className="items-start justify-start prose dark:prose-invert">
       <div className="flex items-end justify-end w-full">

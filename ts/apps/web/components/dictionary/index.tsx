@@ -4,21 +4,28 @@ import { SearchResult } from "../search-result";
 import { type IndexEntry } from "@/lib/db";
 import { Alphabet } from "./alphabet";
 import { Entries } from "./entries";
+import { langCodeToName } from "@/lib/utils";
 
 export default function Dictionary({
+  lang = "fr",
   entries,
   searchTerm,
 }: {
+  lang?: "fr" | "en";
   entries: IndexEntry[];
   searchTerm?: string;
 }) {
-  console.log("load starting", entries.length, "items");
+  const language = langCodeToName(lang);
+
   return (
     <PageContainer>
       <h6 id="main-title" className="" />
-      <LetterScroll className="z-40 fixed top-1/2 transform -translate-y-1/2 right-4" />
+      <LetterScroll
+        language={language}
+        className="z-40 fixed top-1/2 transform -translate-y-1/2 right-4"
+      />
       {searchTerm && <SearchResult hits={entries.length} term={searchTerm} />}
-      <Alphabet />
+      <Alphabet language={language} />
       <Entries className="mt-4" entries={entries} />
     </PageContainer>
   );

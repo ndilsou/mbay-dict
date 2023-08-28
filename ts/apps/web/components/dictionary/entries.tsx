@@ -13,7 +13,7 @@ export function Entries({
   const groupedEntries = createGroups(entries);
   console.log("grouping complete", groupedEntries.length, "groups");
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
+    <div className={cn("flex flex-col gap-2 w-full", className)}>
       {groupedEntries.map((group) => (
         <LetterGroup key={group.key} group={group} />
       ))}
@@ -23,7 +23,7 @@ export function Entries({
 
 function createGroups(entries: IndexEntry[]) {
   const groups = R.groupBy(entries, (entry) => {
-    const lowerCase = entry.french_translation.toLowerCase();
+    const lowerCase = entry.french.translation.toLowerCase();
     const term = lowerCase.replace(/^['\(\{\[-]/, "");
     return term.charAt(0);
   });
@@ -31,7 +31,7 @@ function createGroups(entries: IndexEntry[]) {
     return {
       key: key,
       entries: groups[key].sort((a, b) =>
-        a.french_translation.localeCompare(b.french_translation)
+        a.french.translation.localeCompare(b.french.translation)
       ),
     };
   });

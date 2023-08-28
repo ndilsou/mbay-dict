@@ -44,7 +44,10 @@ export default function RootLayout({
             <ThemeToggle />
           </header>
           {/* <div className="mt-header" /> */}
-          <main className="overflow-auto min-h-page h-page scroll-auto bg-muted">
+          <main
+            id="page-main"
+            className="overflow-auto min-h-page h-page scroll-auto bg-muted"
+          >
             {children}
           </main>
           <TailwindIndicator />

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const LETTERS = [
   "a",
   "b",
@@ -25,4 +27,8 @@ export const LETTERS = [
   "x",
   "y",
   "z",
-];
+] as const;
+
+export const INDEX_KEYS = [...LETTERS, "MISC"] as const;
+export const IndexKeySchema = z.enum(INDEX_KEYS);
+export type IndexKey = z.infer<typeof IndexKeySchema>;
