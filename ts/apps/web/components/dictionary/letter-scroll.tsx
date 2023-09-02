@@ -2,8 +2,7 @@ import { LETTERS } from "@/lib/constants";
 import { cn, languageToCode } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { ArrowDownToLine, ArrowUpToLine, Home } from "lucide-react";
-import { ScrollToButton } from "./scroll-to-button";
+import { ArrowDownToLine, ArrowUpToLine } from "lucide-react";
 
 export function LetterScroll({
   language = "french",

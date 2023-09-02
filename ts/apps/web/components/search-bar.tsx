@@ -4,8 +4,9 @@ import { Search } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
-export function SearchBar() {
+export function SearchBar({ className }: { className?: string }) {
   const router = useRouter();
   const placeholder = "Cherchez un mot...";
   function handleSubmit(e: React.FormEvent<SearchFormElement>) {
@@ -20,7 +21,7 @@ export function SearchBar() {
 
   return (
     <form
-      className="flex w-full max-w-sm items-center space-x-2"
+      className={cn("flex w-full max-w-sm items-center space-x-2", className)}
       onSubmit={handleSubmit}
     >
       <Input name="search" type="search" placeholder={placeholder} />

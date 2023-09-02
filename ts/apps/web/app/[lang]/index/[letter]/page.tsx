@@ -1,6 +1,9 @@
 import { PageContainer } from "@/components/page-container";
 import { LetterEntries } from "@/components/dictionary/letter-entries";
-import { Alphabet } from "@/components/dictionary/alphabet";
+import {
+  Alphabet,
+  AlphabetCollapsible,
+} from "@/components/dictionary/alphabet";
 import {
   INDEX_KEYS,
   LETTERS,
@@ -35,11 +38,11 @@ export default async function IndexAtLetter({
     <PageContainer>
       <h6 id="page-top" />
       <LetterScroll
-        className="z-40 fixed top-1/2 transform -translate-y-1/2 right-4"
+        className="hidden md:flex z-40 fixed top-1/2 transform -translate-y-1/2 right-4"
         language={language}
       />
-      {/* {searchTerm && <SearchResult hits={entries.length} term={searchTerm} />} */}
-      <Alphabet language={language} />
+      <AlphabetCollapsible language={language} className="block md:hidden" />
+      <Alphabet language={language} className="hidden md:flex" />
       <LetterEntries className="mt-4" letter={letter} language={language} />
       <h6 id="page-bottom" />
     </PageContainer>

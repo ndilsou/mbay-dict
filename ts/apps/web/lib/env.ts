@@ -18,7 +18,4 @@ export const env = createEnv({
   experimental__runtimeEnv: {
     NEXT_PUBLIC_BUCKET_NAME: process.env.NEXT_PUBLIC_BUCKET_NAME,
   },
-  // experimental__runtimeEnv: {
-  //   NEXT_PUBLIC_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_PUBLISHABLE_KEY,
-  // }
 });

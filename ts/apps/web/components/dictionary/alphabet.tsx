@@ -1,15 +1,24 @@
-import { INDEX_KEYS, LETTERS } from "@/lib/constants";
+import { INDEX_KEYS } from "@/lib/constants";
 import { cn, languageToCode } from "@/lib/utils";
 import Link from "next/link";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible";
+import { Button } from "../ui/button";
+import { ChevronsUpDown } from "lucide-react";
 
 export function Alphabet({
   language = "french",
+  className,
 }: {
   language?: "french" | "english";
+  className?: string;
 }) {
   const lang = languageToCode(language);
   return (
-    <div className="flex flex-wrap justify-center mt-8 gap-4">
+    <div className={cn("flex flex-wrap justify-center mt-8 gap-4", className)}>
       {INDEX_KEYS.map((letter) => (
         <Letter key={letter} lang={lang} letter={letter}></Letter>
       ))}
@@ -35,5 +44,44 @@ function Letter(props: { lang: string; letter: string }) {
     >
       {label}
     </Link>
+  );
+}
+
+export function AlphabetCollapsible({
+  language = "french",
+  className,
+}: {
+  language?: "french" | "english";
+  className?: string;
+}) {
+  let label: string;
+  if (language === "french") {
+    label = "Voir L'index";
+  } else if (language === "english") {
+    label = "See Index";
+  } else {
+    throw new Error(`Unknown language: ${language}`);
+  }
+
+  return (
+    <div className={className}>
+      <Collapsible>
+        <div className="flex justify-center items-center gap-1 pt-1">
+          <CollapsibleTrigger asChild>
+            <Button
+              variant="ghost"
+              size="lg"
+              className="flex items-center gap-1 p-1"
+            >
+              <span>{label}</span>
+              <ChevronsUpDown className="h-4 w-4" />
+            </Button>
+          </CollapsibleTrigger>
+        </div>
+        <CollapsibleContent>
+          <Alphabet language={language} />
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
   );
 }

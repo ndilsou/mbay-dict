@@ -1,13 +1,14 @@
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import Link from "next/link";
+
+import "@/styles/globals.css";
+import { cn } from "@/lib/utils";
+import { siteConfig } from "@/config/site";
 import { SearchBar } from "@/components/search-bar";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { siteConfig } from "@/config/site";
-import { cn } from "@/lib/utils";
-import "@/styles/globals.css";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,6 +27,22 @@ export const metadata: Metadata = {
   },
 };
 
+function Header() {
+  return (
+    <header className="w-full border-b bg-background h-header flex justify-between px-2 md:px-10 items-center md:flex-row">
+      <div className="hidden md:block">
+        <Title lang="fr" />
+      </div>
+      <div className="w-full flex justify-center md:w-fit">
+        <SearchBar className="w-full max-w-sm md:max-w-md md:w-auto" />
+      </div>
+      <div className="hidden md:block">
+        <ThemeToggle />
+      </div>
+    </header>
+  );
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -35,15 +52,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn("antialiased overflow-hidden", inter.className)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {/* <header className="sticky top-0 z-40 w-full border-b bg-background h-header flex justify-between px-10 items-center"> */}
-          <header className="w-full border-b bg-background h-header flex justify-between px-10 items-center">
-            <Title lang="fr" />
-            <div>
-              <SearchBar />
-            </div>
-            <ThemeToggle />
-          </header>
-          {/* <div className="mt-header" /> */}
+          <Header />
           <main
             id="page-main"
             className="overflow-auto min-h-page h-page scroll-auto bg-muted"
