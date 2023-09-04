@@ -24,7 +24,7 @@ logger = get_logger(__name__)
 parser = XmlParser()
 
 
-def main(filename: str):
+def main(filename: str, outputdir: str):
     filepath = Path(filename)
     xml = filepath.read_text(encoding="utf-8")
     dataset = parser.from_string(xml, NewDataSet)
@@ -51,47 +51,69 @@ def main(filename: str):
     samples = [asdict(sample) for sample in dataset.samples]
     expressions = [asdict(expression) for expression in dataset.expressions]
 
-    records = {}
+    matched_records: dict[str, dict] = {}
+    missed_records = {
+        "translations": [],
+        "samples": [],
+        "expressions": [],
+    }
 
     # Merge entries and translations
     for translation in translations:
         item = translation.copy()
+        item["samples"] = []
+        item["expressions"] = []
+
         if translation["entrycode"] not in entries_dict:
             logger.warning(
                 f"Translation {translation['entrycode']} not found in entries",
                 translation=translation,
             )
+            missed_records["translations"].append(item)
             continue
 
         entry = entries_dict[translation["entrycode"]]
         item.update(entry)
-        item["samples"] = []
-        item["expressions"] = []
-        records[item["entrytranc"]] = item
+        matched_records[item["entrytranc"]] = item
 
     # Link expressions and samples to their corresponding entries
     for expression in expressions:
-        record = records.get(expression["entrytranc"])
+        entrytranc = fix_expression_entrytranc(expression["entrytranc"])
+        record = matched_records.get(entrytranc)
         if record is None:
             logger.warning(
                 f"Expression with parent id {expression['entrytranc']} not found in records",
                 expression=expression,
             )
+            if (
+                expression["trans_exp"] is not None
+                or expression["idiom_exp"] is not None
+            ):
+                missed_records["expressions"].append(expression)
             continue
+
         record["expressions"].append(expression)
 
     for sample in samples:
-        record = records.get(sample["entrytranc"])
+        record = matched_records.get(sample["entrytranc"])
         if record is None:
             logger.warning(
                 f"Sample with parent id {sample['entrytranc']} not found in records",
                 sample=sample,
             )
+            if sample["trans_sent"] is not None:
+                missed_records["samples"].append(sample)
             continue
+
         record["samples"].append(sample)
 
-    with open("output.json", "w", encoding="utf-8") as json_file:
-        json.dump(list(records.values()), json_file, ensure_ascii=False, indent=2)
+    outputpath = Path(outputdir)
+    with open(outputpath / "matched-output.json", "w", encoding="utf-8") as json_file:
+        json.dump(
+            list(matched_records.values()), json_file, ensure_ascii=False, indent=2
+        )
+    with open(outputpath / "missed-output.json", "w", encoding="utf-8") as json_file:
+        json.dump(missed_records, json_file, ensure_ascii=False, indent=2)
 
 
 def correct_translation(
@@ -150,5 +172,22 @@ def fix_code(code: str | None) -> str:
     return code.strip()
 
 
+EXPR_CODE_ERRORS = {
+    "4842": "4841",
+    "23462": "23461",
+    "46652": "46651",
+    "2222": "2221",
+}
+
+
+def fix_expression_entrytranc(entrytranc: str | None) -> str:
+    """A few expressions have the wrong entrytranc code. This function fixes them."""
+    if entrytranc is None:
+        return None
+    if entrytranc in EXPR_CODE_ERRORS:
+        return EXPR_CODE_ERRORS[entrytranc]
+    return entrytranc
+
+
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2])
