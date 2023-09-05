@@ -16,7 +16,9 @@ import { LetterScroll } from "@/components/dictionary/letter-scroll";
 
 // Return a list of `params` to populate the [lang] and [entryId] dynamic segment
 export async function generateStaticParams() {
-  return INDEX_KEYS.map((letter) => ({ letter, lang: "french" }));
+  const fr = INDEX_KEYS.map((letter) => ({ letter, lang: "french" }));
+  const en = INDEX_KEYS.map((letter) => ({ letter, lang: "en" }));
+  return [...fr, ...en];
 }
 
 export default async function IndexAtLetter({

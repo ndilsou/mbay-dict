@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 
 export async function LetterEntries({
   letter,
-  language = "french",
+  language,
   className,
 }: {
   letter: IndexKey;

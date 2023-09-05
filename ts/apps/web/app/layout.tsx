@@ -34,7 +34,7 @@ function Header() {
         <Title lang="fr" />
       </div>
       <div className="w-full flex justify-center md:w-fit">
-        <SearchBar className="w-full max-w-sm md:max-w-md md:w-auto" />
+        <SearchBar className="w-full max-w-sm md:max-w-lg md:w-96" />
       </div>
       <div className="hidden md:block">
         <ThemeToggle />
@@ -55,7 +55,7 @@ export default function RootLayout({
           <Header />
           <main
             id="page-main"
-            className="overflow-auto min-h-page h-page scroll-auto bg-muted"
+            className="overflow-auto min-h-page h-page scroll-auto"
           >
             {children}
           </main>

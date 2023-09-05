@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { EntryCard, EntryCardSkeleton } from "./entry-card";
 import { Suspense } from "react";
-import { Loading } from "../loading";
 
 export function LetterGroup({
   language,
@@ -25,7 +24,7 @@ export function LetterGroup({
       </Link>
       <div className="flex flex-col gap-2 mt-4">
         <Suspense fallback={<EntryGroupSkeleton />}>
-          <EntryGroup entries={group.entries} />
+          <EntryGroup entries={group.entries} language={language} />
         </Suspense>
       </div>
     </section>
@@ -34,15 +33,17 @@ export function LetterGroup({
 
 async function EntryGroup({
   entries,
+  language,
   className,
 }: {
   entries: IndexEntry[];
+  language: "french" | "english";
   className?: string;
 }) {
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       {entries.map((entry) => (
-        <EntryCard key={entry._id} entry={entry} language="french" />
+        <EntryCard key={entry._id} entry={entry} language={language} />
       ))}
     </div>
   );

@@ -21,7 +21,7 @@ export function SearchBar({ className }: { className?: string }) {
 
   return (
     <form
-      className={cn("flex w-full max-w-sm items-center space-x-2", className)}
+      className={cn("flex w-full  max-w-sm items-center space-x-2", className)}
       onSubmit={handleSubmit}
     >
       <Input name="search" type="search" placeholder={placeholder} />
