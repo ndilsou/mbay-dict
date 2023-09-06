@@ -4,7 +4,6 @@ import { PageContainer } from "@/components/page-container";
 import { SoundButton } from "@/components/sound-button";
 import { getEntry, type Entry, listEntryIds } from "@/lib/db";
 import { langCodeToName } from "@/lib/utils";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BackButton } from "@/components/back-button";
@@ -39,9 +38,7 @@ export default async function Page({
       </div>
       <div className="flex items-baseline">
         <h1 className="text-6xl font-bold mb-2">{entry.headword}</h1>
-        {entry.sound_filename && (
-          <SoundButton filename={entry.sound_filename} />
-        )}
+        {entry.soundFilename && <SoundButton filename={entry.soundFilename} />}
       </div>
       <p className="text-xl">{translation}</p>
       <div>

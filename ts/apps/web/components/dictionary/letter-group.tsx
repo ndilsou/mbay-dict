@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { EntryCard, EntryCardSkeleton } from "./entry-card";
 import { Suspense } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 export function LetterGroup({
   language,
@@ -46,6 +47,22 @@ async function EntryGroup({
         <EntryCard key={entry._id} entry={entry} language={language} />
       ))}
     </div>
+  );
+}
+
+export function LetterGroupSkeleton({ label }: { label: string }) {
+  return (
+    <section>
+      <div>
+        <h2 className="text-4xl font-bold capitalize blur-sm">
+          {label}
+          {/* <Skeleton className="w-9 h-10 bg-background" /> */}
+        </h2>
+      </div>
+      <div className="flex flex-col gap-2 mt-4">
+        <EntryGroupSkeleton />
+      </div>
+    </section>
   );
 }
 

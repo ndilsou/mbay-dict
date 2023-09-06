@@ -54,7 +54,7 @@ export default async function Home() {
             </div>
           </CardContent>
         </Card>
-        <Alert>
+        <Alert className="dark:bg-emerald-800 bg-emerald-300">
           <Sprout className="h-4 w-4" />
           <AlertTitle className="">
             ASSOCIATION DE SOLIDARITE ET POUR LE DEVELOPPEMENT DE LA CULTURE

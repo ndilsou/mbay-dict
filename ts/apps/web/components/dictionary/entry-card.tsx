@@ -9,6 +9,10 @@ import {
   ExamplesCollapsibleSkeleton,
 } from "./examples-collapsible";
 import { Skeleton } from "../ui/skeleton";
+import {
+  ExpressionsCollapsible,
+  ExpressionsCollapsibleSkeleton,
+} from "./expressions-collapsible";
 
 export function EntryCard({
   entry,
@@ -27,17 +31,16 @@ export function EntryCard({
             <h1 className="text-2xl font-bold">{entry.headword}</h1>
           </Link>
         </Button>
-        {entry.sound_filename && (
-          <SoundButton filename={entry.sound_filename} />
-        )}
+        {entry.soundFilename && <SoundButton filename={entry.soundFilename} />}
       </CardHeader>
       <CardContent>
         <p className="text-lg">{translation}</p>
-        <ExamplesCollapsible
+        <ExpressionsCollapsible
           className="mt-2"
           entry={entry}
           language={language}
         />
+        <ExamplesCollapsible entry={entry} language={language} />
       </CardContent>
     </Card>
   );
@@ -54,9 +57,8 @@ export function EntryCardSkeleton() {
         </Button>
       </CardHeader>
       <CardContent>
-        {/* <p className="text-lg"> */}
         <Skeleton className="h-[18px] w-52" />
-        {/* </p> */}
+        <ExpressionsCollapsibleSkeleton className="mt-2" />
         <ExamplesCollapsibleSkeleton className="mt-2" />
       </CardContent>
     </Card>

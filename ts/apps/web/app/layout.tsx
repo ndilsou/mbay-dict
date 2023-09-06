@@ -23,7 +23,8 @@ export const metadata: Metadata = {
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
   icons: {
-    icon: "/favicon.png",
+    // icon: "/favicon.png",
+    icon: "/egg.ico",
   },
 };
 

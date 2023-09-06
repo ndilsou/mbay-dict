@@ -12,8 +12,9 @@ import type { IndexEntry } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { ChevronsUpDown } from "lucide-react";
 import { Suspense } from "react";
+import { Expressions } from "../expressions";
 
-export async function ExamplesCollapsible({
+export async function ExpressionsCollapsible({
   entry,
   language,
   className,
@@ -23,14 +24,14 @@ export async function ExamplesCollapsible({
   className?: string;
   children?: React.ReactNode;
 }) {
-  const count = entry.examples.length;
+  const count = entry.expressions.length;
   if (count === 0) {
     return (
       <div className={cn(className)}>
         <Separator />
         <div className="py-2">
           <span className="text-muted-foreground">
-            Aucun example pour ce mot
+            Aucune expressions pour ce mot
           </span>
         </div>
       </div>
@@ -39,9 +40,9 @@ export async function ExamplesCollapsible({
 
   let label: string;
   if (count === 1) {
-    label = "Voir l'exemple";
+    label = "Voir l'expression";
   } else {
-    label = `Voir les ${count} exemples`;
+    label = `Voir les ${count} expressions`;
   }
 
   return (
@@ -61,14 +62,14 @@ export async function ExamplesCollapsible({
       </div>
       <CollapsibleContent className="gap-1 mt-2">
         <Suspense fallback={<Loading />}>
-          <Examples entryId={entry._id} language={language} />
+          <Expressions entryId={entry._id} language={language} />
         </Suspense>
       </CollapsibleContent>
     </Collapsible>
   );
 }
 
-export async function ExamplesCollapsibleSkeleton({
+export async function ExpressionsCollapsibleSkeleton({
   className,
 }: {
   className?: string;
