@@ -54,11 +54,11 @@ def duration_microseconds(delta: datetime.timedelta):
 
 
 class CustomJSONEncoder(json.JSONEncoder):
-    by_alias: ClassVar[bool] = False
+    by_alias: ClassVar[bool] = True
 
     def default(self, o):
         if isinstance(o, BaseModel):
-            return o.dict(by_alias=self.by_alias)
+            return o.model_dump(by_alias=self.by_alias)
         elif isinstance(o, (set, tuple, UserList)):
             return list(o)
         elif isinstance(

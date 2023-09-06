@@ -1,9 +1,16 @@
+import json
+import os
 import sys
-from typing import Annotated, List, Literal
-from pydantic import AfterValidator, BaseModel, Field
+
+# from typing import Annotated, List, Literal
+# from pydantic import AfterValidator, BaseModel, Field
 from datetime import datetime
-from bson import ObjectId as _ObjectId
+
+# from bson import ObjectId as _ObjectId
 from bson.json_util import loads, dumps
+from mbay_dict.core.domain import Entry, Example, Expression, ParentId, Translation
+from mbay_dict.core.models import new_object_id
+from mbay_dict.core.serializers import CustomJSONEncoder
 from rich import print as rprint
 
 
@@ -44,7 +51,7 @@ def main(input_filename: str, output_dirname: str):
                         translation=sample["french_trans_sent"],
                         key=create_index_key(sample["french_trans_sent"]),
                     ),
-                    sound_filename=sample["soundfile"],
+                    sound_filename=change_file_extension(sample["soundfile"], "mp3"),
                 )
                 examples.append(example)
             except Exception:
@@ -77,11 +84,13 @@ def main(input_filename: str, output_dirname: str):
                             translation=expression["french_trans_sent"],
                             key=create_index_key(expression["french_trans_sent"]),
                         ),
-                        sound_filename=expression["soundfile"],
+                        sound_filename=change_file_extension(
+                            expression["soundfile"], "mp3"
+                        ),
                     )
 
                 expr = Expression(
-                    _id=expr_id,
+                    id=expr_id,
                     entry_id=entry_id,
                     mbay=expression["idiom_exp"],
                     english=Translation(
@@ -94,7 +103,9 @@ def main(input_filename: str, output_dirname: str):
                             expression["french_trans_exp"]
                         ),  # Stub function
                     ),
-                    sound_filename=expression["soundexpr"],
+                    sound_filename=change_file_extension(
+                        expression["soundexpr"], "mp3"
+                    ),
                     example=example,
                 )
                 expressions.append(expr)
@@ -107,12 +118,10 @@ def main(input_filename: str, output_dirname: str):
         # Create the entry
         try:
             entry = Entry(
-                _id=entry_id,
-                created_at=datetime.now(),
-                updated_at=datetime.now(),
+                id=entry_id,
                 headword=item["entry"],
                 part_of_speech=item["category"],
-                sound_filename=item["soundfile"],
+                sound_filename=change_file_extension(item["soundfile"], "mp3"),
                 english=Translation(
                     translation=item["translate"],
                     key=create_index_key(item["translate"]),
@@ -123,7 +132,7 @@ def main(input_filename: str, output_dirname: str):
                 ),
                 related_word_id=None,
                 examples=examples,
-                expresssions=expressions,
+                expressions=expressions,
             )
         except Exception:
             rprint(f"error creating entry for {item}")
@@ -135,89 +144,12 @@ def main(input_filename: str, output_dirname: str):
         if entry["relword"] in entries:
             entry["entry"].related_word_id = entries[entry["relword"]]["entry"].id
 
-    output = [entry["entry"] for entry in entries.values()]
+    output = [entry["entry"].model_dump(by_alias=True) for entry in entries.values()]
 
     # Save the processed data to the output file
     print(f"Saving data to {output_filepath}")
     with open(output_filepath, "w") as f:
-        f.write(dumps(output))
-
-
-def new_object_id() -> str:
-    return str(_ObjectId())
-
-
-def check_object_id(value: str) -> str:
-    if not _ObjectId.is_valid(value):
-        raise ValueError("Invalid ObjectId")
-    return value
-
-
-ObjectId = Annotated[str, AfterValidator(check_object_id)]
-
-
-# class ObjectId(_ObjectId):
-#     @classmethod
-#     def __get_validators__(cls):
-#         yield cls.validate
-
-#     @classmethod
-#     def validate(cls, v):
-#         if not ObjectId.is_valid(v):
-#             raise ValueError("Invalid objectid")
-#         return ObjectId(v)
-
-#     @classmethod
-#     def __modify_schema__(cls, field_schema):
-#         field_schema.update(type="string")
-
-
-class Translation(BaseModel):
-    translation: str
-    key: str
-
-
-class ParentId(BaseModel):
-    id: ObjectId
-    type: Literal["entry", "expression"]
-
-
-class Example(BaseModel):
-    id: ObjectId = Field(..., default_factory=new_object_id, alias="_id")
-    created_at: datetime = Field(default_factory=datetime.now)
-    updated_at: datetime = Field(default_factory=datetime.now)
-    parent_id: ParentId
-    mbay: str
-    english: Translation
-    french: Translation
-    sound_filename: str | None = None
-
-
-class Expression(BaseModel):
-    id: ObjectId = Field(..., default_factory=new_object_id, alias="_id")
-    created_at: datetime = Field(default_factory=datetime.now)
-    updated_at: datetime = Field(default_factory=datetime.now)
-    entry_id: ObjectId
-    mbay: str
-    english: Translation
-    french: Translation
-    sound_filename: str | None = None
-    example: Example | None = None
-
-
-class Entry(BaseModel):
-    id: ObjectId = Field(..., default_factory=new_object_id, alias="_id")
-    created_at: datetime = Field(default_factory=datetime.now)
-    updated_at: datetime = Field(default_factory=datetime.now)
-    headword: str
-    part_of_speech: str | None = None
-    sound_filename: str | None = None
-    french: Translation
-    english: Translation
-    related_word_id: ObjectId | None = None
-
-    examples: list[Example]
-    expresssions: list[Expression]
+        f.write(dumps(output, cls=CustomJSONEncoder, ensure_ascii=False))
 
 
 def create_index_key(text: str):
@@ -231,6 +163,14 @@ def create_index_key(text: str):
     else:
         index_key = "MISC"
     return index_key
+
+
+def change_file_extension(filename: str | None, new_ext: str) -> str | None:
+    if filename is None:
+        return None
+
+    base_name = os.path.splitext(filename)[0]
+    return f"{base_name}.{new_ext}"
 
 
 if __name__ == "__main__":

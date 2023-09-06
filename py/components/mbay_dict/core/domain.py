@@ -1,19 +1,42 @@
-from .models import Entity
+from typing import Literal
+from .models import Entity, ObjectId, ValueObject
+
+
+
+class Translation(ValueObject):
+    translation: str
+    key: str
+
+
+class ParentId(ValueObject):
+    id: ObjectId
+    type: Literal["entry", "expression"]
 
 
 class Example(Entity):
-    entry_id: int
+    parent_id: ParentId
     mbay: str
-    english_translation: str
-    french_translation: str
+    english: Translation
+    french: Translation
     sound_filename: str | None = None
+
+
+class Expression(Entity):
+    entry_id: ObjectId
+    mbay: str
+    english: Translation
+    french: Translation
+    sound_filename: str | None = None
+    example: Example | None = None
 
 
 class Entry(Entity):
-    id: int
     headword: str
-    english_translation: str
-    french_translation: str
     part_of_speech: str | None = None
     sound_filename: str | None = None
-    example_ids: list[int]
+    french: Translation
+    english: Translation
+    related_word_id: ObjectId | None = None
+
+    examples: list[Example]
+    expressions: list[Expression]
