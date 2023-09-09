@@ -13,7 +13,6 @@ export function Entries({
   className?: string;
 }) {
   const groupedEntries = createGroups(entries);
-  console.log("grouping complete", groupedEntries.length, "groups");
   return (
     <div className={cn("flex flex-col gap-2 w-full", className)}>
       {groupedEntries.map((group) => (
