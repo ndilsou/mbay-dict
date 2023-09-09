@@ -7,6 +7,11 @@ import { langCodeToName } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BackButton } from "@/components/back-button";
+import {
+  GrammaticalNoteSkeleton,
+  GrammaticalNote,
+} from "@/components/dictionary/grammatical-note";
+import { Expressions } from "@/components/expressions";
 
 export async function generateStaticParams() {
   const ids = await listEntryIds();
@@ -41,8 +46,19 @@ export default async function Page({
         {entry.soundFilename && <SoundButton filename={entry.soundFilename} />}
       </div>
       <p className="text-xl">{translation}</p>
+      {entry.grammaticalNote && (
+        <Suspense fallback={<GrammaticalNoteSkeleton />}>
+          <GrammaticalNote language={language} entry={entry} />
+        </Suspense>
+      )}
       <div>
-        <h3 className="">Exemples d&apos;usage:</h3>
+        <h3>Expressions:</h3>
+        <Suspense fallback={<Loading />}>
+          <Expressions entryId={entry._id} language={language} />
+        </Suspense>
+      </div>
+      <div>
+        <h3>Exemples d&apos;usage:</h3>
         <Suspense fallback={<Loading />}>
           <Examples entryId={entry._id} language={language} />
         </Suspense>

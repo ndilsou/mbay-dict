@@ -4,9 +4,7 @@ import { cache } from "react";
 import { MongoClient, ObjectId } from "mongodb";
 import { z } from "zod";
 import { env } from "./env";
-import { INDEX_KEYS, IndexKeySchema, type IndexKey } from "./constants";
-
-const COLLECTION_NAME = "entries-test";
+import { type IndexKey } from "./constants";
 
 const client = new MongoClient(env.MONGODB_URI, {
   tls: true,
@@ -24,44 +22,6 @@ const ObjectIdSchema = z
     message: "invalid object id",
   })
   .transform((_objectId) => _objectId.toString());
-
-// export const ExampleSchema = z.object({
-//   _id: ObjectIdSchema,
-//   created_at: z.string(),
-//   updated_at: z.string(),
-//   entry_id: z.number(),
-//   mbay: z.string(),
-//   english_translation: z.string(),
-//   french_translation: z.string(),
-//   sound_filename: z.string().nullable().default(null),
-// });
-
-// export const TranslationSchema = z.object({
-//   key: IndexKeySchema,
-//   translation: z.string(),
-// });
-
-// export const EntrySchema = z.object({
-//   _id: ObjectIdSchema,
-//   created_at: z.string(),
-//   updated_at: z.string(),
-//   headword: z.string(),
-//   french: TranslationSchema,
-//   english: TranslationSchema,
-//   part_of_speech: z.string().nullable().default(null),
-//   sound_filename: z.string().nullable().default(null),
-//   examples: z.array(ExampleSchema),
-// });
-
-// export const IndexEntrySchema = z.object({
-//   _id: ObjectIdSchema,
-//   headword: z.string(),
-//   french: TranslationSchema,
-//   english: TranslationSchema,
-//   part_of_speech: z.string().nullable().default(null),
-//   sound_filename: z.string().nullable().default(null),
-//   examples: z.array(z.object({ _id: ObjectIdSchema })),
-// });
 
 const TranslationSchema = z.object({
   key: z.string(),
@@ -109,7 +69,20 @@ export const EntrySchema = z.object({
   soundFilename: z.string().nullable(),
   french: TranslationSchema,
   english: TranslationSchema,
-  relatedWordId: ObjectIdSchema.nullable().default(null),
+  relatedWord: z
+    .object({
+      text: z.string().nullable(),
+      id: ObjectIdSchema.nullable(),
+    })
+    .nullable()
+    .default(null),
+  grammaticalNote: z
+    .object({
+      french: z.string(),
+      english: z.string(),
+    })
+    .nullable()
+    .default(null),
   examples: z.array(ExampleSchema),
   expressions: z.array(ExpressionSchema),
 });
@@ -131,6 +104,8 @@ const ENTRY_INDEX_PROJECTION = {
   french: true,
   partOfSpeech: true,
   soundFilename: true,
+  relatedWord: true,
+  grammaticalNote: true,
   expressions: {
     _id: 1,
   },
@@ -165,7 +140,7 @@ export const listEntriesAtLetter = cache(
     const key = `${language}.key`;
     const db = getDB();
     const entries = await db
-      .collection(COLLECTION_NAME)
+      .collection(env.ENTRIES_COLLECTION_NAME)
       .find(
         { [key]: letter },
         {
@@ -188,7 +163,7 @@ export const searchEntries = cache(
     const key = `${language}.translation`;
     const db = getDB();
     const entries = await db
-      .collection(COLLECTION_NAME)
+      .collection(env.ENTRIES_COLLECTION_NAME)
       .find(
         { [key]: { $regex: `${searchTerm}` } },
         {
@@ -204,12 +179,37 @@ export const searchEntries = cache(
 export const getEntry = cache(async (id: string): Promise<Entry> => {
   const db = getDB();
   const entry = await db
-    .collection(COLLECTION_NAME)
+    .collection(env.ENTRIES_COLLECTION_NAME)
     .findOne({ _id: new ObjectId(id) });
   if (!entry) {
     throw new Error("Entry not found");
   }
   return EntrySchema.parse(entry);
+});
+
+export const HeadwordSchema = z.object({
+  headword: z.string(),
+  _id: ObjectIdSchema,
+});
+
+export type Headword = z.infer<typeof HeadwordSchema>;
+
+export const getHeadword = cache(async (id: string): Promise<Headword> => {
+  const db = getDB();
+  const entry = await db.collection(env.ENTRIES_COLLECTION_NAME).findOne(
+    { _id: new ObjectId(id) },
+    {
+      projection: {
+        headword: true,
+      },
+    }
+  );
+
+  if (!entry) {
+    throw new Error("Entry not found");
+  }
+
+  return HeadwordSchema.parse(entry);
 });
 
 export const ExamplesSchema = z.object({
@@ -230,7 +230,7 @@ export const getExpressions = cache(
   async (id: string): Promise<EntryExpressions> => {
     const db = getDB();
     const result = await db
-      .collection(COLLECTION_NAME)
+      .collection(env.ENTRIES_COLLECTION_NAME)
       .findOne(
         { _id: new ObjectId(id) },
         { projection: { expressions: true } }
@@ -245,7 +245,7 @@ export const getExpressions = cache(
 export const getExamples = cache(async (id: string): Promise<EntryExamples> => {
   const db = getDB();
   const result = await db
-    .collection(COLLECTION_NAME)
+    .collection(env.ENTRIES_COLLECTION_NAME)
     .findOne({ _id: new ObjectId(id) }, { projection: { examples: true } });
   if (!result) {
     throw new Error("Entry not found");
@@ -256,7 +256,7 @@ export const getExamples = cache(async (id: string): Promise<EntryExamples> => {
 export const listEntryIds = cache(async (): Promise<string[]> => {
   const db = getDB();
   const entries = await db
-    .collection(COLLECTION_NAME)
+    .collection(env.ENTRIES_COLLECTION_NAME)
     .find(
       {},
       {

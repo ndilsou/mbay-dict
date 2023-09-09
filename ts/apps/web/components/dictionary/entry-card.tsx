@@ -13,6 +13,8 @@ import {
   ExpressionsCollapsible,
   ExpressionsCollapsibleSkeleton,
 } from "./expressions-collapsible";
+import { GrammaticalNote, GrammaticalNoteSkeleton } from "./grammatical-note";
+import { Suspense } from "react";
 
 export function EntryCard({
   entry,
@@ -35,6 +37,11 @@ export function EntryCard({
       </CardHeader>
       <CardContent>
         <p className="text-lg">{translation}</p>
+        {entry.grammaticalNote && (
+          <Suspense fallback={<GrammaticalNoteSkeleton />}>
+            <GrammaticalNote language={language} entry={entry} />
+          </Suspense>
+        )}
         <ExpressionsCollapsible
           className="mt-2"
           entry={entry}
