@@ -1,23 +1,22 @@
-import json
 import os
 import sys
 
-# from typing import Annotated, List, Literal
-# from pydantic import AfterValidator, BaseModel, Field
-from datetime import datetime
 
-# from bson import ObjectId as _ObjectId
 from bson.json_util import loads, dumps
-from mbay_dict.core.domain import Entry, Example, Expression, ParentId, Translation
+from mbay_dict.core.domain import (
+    Entry,
+    Example,
+    Expression,
+    Note,
+    ParentId,
+    RelatedWord,
+    Translation,
+)
 from mbay_dict.core.models import new_object_id
 from mbay_dict.core.serializers import CustomJSONEncoder
 from rich import print as rprint
 
-
 from pathlib import Path
-
-import unicodedata
-import regex
 
 
 def main(input_filename: str, output_dirname: str):
@@ -43,19 +42,15 @@ def main(input_filename: str, output_dirname: str):
                 example = Example(
                     parent_id=ParentId(id=entry_id, type="entry"),
                     mbay=sample["samplesent"],
-                    english=Translation(
-                        translation=sample["trans_sent"],
-                        key=create_index_key(sample["trans_sent"]),
-                    ),
-                    french=Translation(
-                        translation=sample["french_trans_sent"],
-                        key=create_index_key(sample["french_trans_sent"]),
-                    ),
+                    english=Translation.from_text(sample["trans_sent"]),
+                    french=Translation.from_text(sample["french_trans_sent"]),
                     sound_filename=change_file_extension(sample["soundfile"], "mp3"),
                 )
                 examples.append(example)
-            except Exception:
-                rprint(f"error creating sample for entry {item['entry']} -> {sample}")
+            except Exception as e:
+                rprint(
+                    f"error creating sample for entry {item['entry']} -> {sample}", e
+                )
                 raise
         # Create the expressions
         expressions = []
@@ -76,14 +71,8 @@ def main(input_filename: str, output_dirname: str):
                     example = Example(
                         parent_id=ParentId(id=expr_id, type="expression"),
                         mbay=expression["samplesent"],
-                        english=Translation(
-                            translation=expression["trans_sent"],
-                            key=create_index_key(expression["trans_sent"]),
-                        ),
-                        french=Translation(
-                            translation=expression["french_trans_sent"],
-                            key=create_index_key(expression["french_trans_sent"]),
-                        ),
+                        english=Translation.from_text(expression["trans_sent"]),
+                        french=Translation.from_text(expression["french_trans_sent"]),
                         sound_filename=change_file_extension(
                             expression["soundfile"], "mp3"
                         ),
@@ -93,56 +82,59 @@ def main(input_filename: str, output_dirname: str):
                     id=expr_id,
                     entry_id=entry_id,
                     mbay=expression["idiom_exp"],
-                    english=Translation(
-                        translation=expression["trans_exp"],
-                        key=create_index_key(expression["trans_exp"]),
-                    ),
-                    french=Translation(
-                        translation=expression["french_trans_exp"],
-                        key=create_index_key(
-                            expression["french_trans_exp"]
-                        ),  # Stub function
-                    ),
+                    english=Translation.from_text(expression["trans_exp"]),
+                    french=Translation.from_text(expression["french_trans_exp"]),
                     sound_filename=change_file_extension(
                         expression["soundexpr"], "mp3"
                     ),
                     example=example,
                 )
                 expressions.append(expr)
-            except Exception:
+            except Exception as e:
                 rprint(
-                    f"error creating expressions for entry {item['entry']} -> {expression}"
+                    f"error creating expressions for entry {item['entry']} -> {expression}",
+                    e,
                 )
                 raise
 
         # Create the entry
         try:
+            note: Note | None = None
+            if item.get("gramnote") and item.get("french_gramnote"):
+                note = Note(
+                    french=item["french_gramnote"],
+                    english=item["gramnote"],
+                )
+
+            relword = RelatedWord(text=item["relword"]) if item["relword"] else None
             entry = Entry(
                 id=entry_id,
                 headword=item["entry"],
                 part_of_speech=item["category"],
                 sound_filename=change_file_extension(item["soundfile"], "mp3"),
-                english=Translation(
-                    translation=item["translate"],
-                    key=create_index_key(item["translate"]),
-                ),
-                french=Translation(
-                    translation=item["french_translate"],
-                    key=create_index_key(item["french_translate"]),
-                ),
-                related_word_id=None,
+                english=Translation.from_text(item["translate"]),
+                french=Translation.from_text(item["french_translate"]),
+                related_word=relword,
                 examples=examples,
                 expressions=expressions,
+                grammatical_note=note,
             )
-        except Exception:
-            rprint(f"error creating entry for {item}")
+        except Exception as e:
+            rprint(f"error creating entry for {item}", e)
             raise
 
         entries[entry.headword] = dict(entry=entry, relword=item["relword"])
 
     for entry in entries.values():
         if entry["relword"] in entries:
-            entry["entry"].related_word_id = entries[entry["relword"]]["entry"].id
+            # print(
+            #     "HIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+            #     entries[entry["relword"]]["entry"],
+            # )
+            entry["entry"].related_word = RelatedWord(
+                id=entries[entry["relword"]]["entry"].id
+            )
+            # rprint(entry["entry"].related_word)
 
     output = [entry["entry"].model_dump(by_alias=True) for entry in entries.values()]
 
@@ -150,19 +142,6 @@ def main(input_filename: str, output_dirname: str):
     print(f"Saving data to {output_filepath}")
     with open(output_filepath, "w") as f:
         f.write(dumps(output, cls=CustomJSONEncoder, ensure_ascii=False))
-
-
-def create_index_key(text: str):
-    lower_case = text.lower()
-    clean_text = regex.sub(r"^['\(\{\[-]", "", lower_case)
-    first_letter = clean_text[0]
-    candidate = unicodedata.normalize("NFD", first_letter)
-    candidate = regex.sub(r"\p{M}", "", candidate)
-    if ord(candidate) >= 97 and ord(candidate) <= 122:
-        index_key = candidate
-    else:
-        index_key = "MISC"
-    return index_key
 
 
 def change_file_extension(filename: str | None, new_ext: str) -> str | None:

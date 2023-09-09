@@ -8,10 +8,9 @@ from pymongo import IndexModel, MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 from rich import print as rprint
+from pathlib import Path
 
 load_dotenv()
-
-from pathlib import Path
 
 
 def main(input_filename: str, collection_name: str):
