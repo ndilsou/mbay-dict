@@ -24,7 +24,7 @@ export default function Dictionary({
         className="hidden md:flex z-40 fixed top-1/2 transform -translate-y-1/2 right-4"
         language={language}
       />
-      {searchTerm && <SearchResult hits={entries.length} term={searchTerm} />}
+      {searchTerm && <SearchResult language={language} hits={entries.length} term={searchTerm} />}
       <AlphabetCollapsible language={language} className="block md:hidden" />
       <Alphabet language={language} className="hidden md:flex" />
       <Entries language={language} className="mt-4" entries={entries} />
