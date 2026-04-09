@@ -69,7 +69,7 @@ export const listLetters = createServerFn({ method: 'GET' }).handler(
 )
 
 export const listByLetter = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ letter: z.string().min(1).max(5), lang: z.string().optional() }).parse)
+  .inputValidator(z.object({ letter: z.string().min(1).max(5) }).parse)
   .handler(async ({ data }) => {
     const db = getDb()
     const result = await db
