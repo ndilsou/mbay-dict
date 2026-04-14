@@ -1,22 +1,21 @@
 import { Link } from '@tanstack/react-router'
-import { LETTERS, languageToCode, type LangName } from '@/lib/constants'
+import { LETTERS, directionLang, type Direction } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { t } from '@/lib/i18n'
 import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 
 export function Alphabet({
-  language = 'french',
+  dir = 'mb-fr',
   letters,
   className,
   activeLetter,
 }: {
-  language?: LangName
+  dir?: Direction
   letters?: string[]
   className?: string
   activeLetter?: string
 }) {
-  const lang = languageToCode(language)
   const available = letters ?? [...LETTERS]
 
   return (
@@ -32,8 +31,8 @@ export function Alphabet({
         return (
           <Link
             key={letter}
-            to="/$lang/index/$letter"
-            params={{ lang, letter }}
+            to="/$dir/index/$letter"
+            params={{ dir, letter }}
             className={cn(
               'inline-flex items-center justify-center size-10 rounded-lg text-sm font-medium capitalize transition-all duration-150 md:size-11 md:text-base',
               isActive
@@ -50,18 +49,19 @@ export function Alphabet({
 }
 
 export function AlphabetCollapsible({
-  language = 'french',
+  dir = 'mb-fr',
   letters,
   className,
   activeLetter,
 }: {
-  language?: LangName
+  dir?: Direction
   letters?: string[]
   className?: string
   activeLetter?: string
 }) {
   const [open, setOpen] = useState(false)
-  const label = t('see_index', language)
+  const lang = directionLang(dir)
+  const label = t('see_index', lang)
 
   return (
     <div className={className}>
@@ -87,11 +87,7 @@ export function AlphabetCollapsible({
         )}
       >
         <div className="overflow-hidden">
-          <Alphabet
-            language={language}
-            letters={letters}
-            activeLetter={activeLetter}
-          />
+          <Alphabet dir={dir} letters={letters} activeLetter={activeLetter} />
         </div>
       </div>
     </div>

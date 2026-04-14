@@ -3,6 +3,7 @@ import { eq, sql, asc } from 'drizzle-orm'
 import { z } from 'zod'
 import { getDb } from '@/db'
 import { entries, examples, expressions, relatedWords } from '@/db/schema'
+import type { IndexColumn } from '@/lib/constants'
 
 // --- Types ---
 
@@ -53,25 +54,59 @@ export type EntryDetail = {
   } | null
 }
 
+// --- Helpers ---
+
+const columnEnum = z.enum(['head_letter', 'french_letter', 'english_letter'])
+
+function getLetterColumn(col: IndexColumn) {
+  return {
+    head_letter: entries.headLetter,
+    french_letter: entries.frenchLetter,
+    english_letter: entries.englishLetter,
+  }[col]!
+}
+
+function getSortColumn(col: IndexColumn) {
+  return {
+    head_letter: entries.headword,
+    french_letter: entries.french,
+    english_letter: entries.english,
+  }[col]
+}
+
 // --- Server Functions ---
 
-export const listLetters = createServerFn({ method: 'GET' }).handler(
-  async () => {
+export const listLetters = createServerFn({ method: 'GET' })
+  .inputValidator(
+    z
+      .object({ column: columnEnum.default('head_letter') })
+      .parse,
+  )
+  .handler(async ({ data }) => {
     const db = getDb()
+    const col = getLetterColumn(data.column as IndexColumn)
     const result = await db
-      .selectDistinct({ letter: entries.headLetter })
+      .selectDistinct({ letter: col })
       .from(entries)
-      .orderBy(asc(entries.headLetter))
+      .orderBy(asc(col))
     return result
       .map((r) => r.letter)
       .filter((l): l is string => l != null)
-  },
-)
+  })
 
 export const listByLetter = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ letter: z.string().min(1).max(5) }).parse)
+  .inputValidator(
+    z
+      .object({
+        letter: z.string().min(1).max(5),
+        column: columnEnum.default('head_letter'),
+      })
+      .parse,
+  )
   .handler(async ({ data }) => {
     const db = getDb()
+    const col = getLetterColumn(data.column as IndexColumn)
+    const sort = getSortColumn(data.column as IndexColumn)
     const result = await db
       .select({
         id: entries.id,
@@ -82,18 +117,21 @@ export const listByLetter = createServerFn({ method: 'GET' })
         soundFilename: entries.soundFilename,
       })
       .from(entries)
-      .where(eq(entries.headLetter, data.letter.toLowerCase()))
-      .orderBy(asc(entries.headword))
+      .where(eq(col, data.letter.toLowerCase()))
+      .orderBy(asc(sort))
     return result as EntryListItem[]
-  },
-)
+  })
 
 export const searchEntries = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({
-    q: z.string().min(1).max(200),
-    limit: z.number().int().min(1).max(100).default(50),
-    offset: z.number().int().min(0).default(0),
-  }).parse)
+  .inputValidator(
+    z
+      .object({
+        q: z.string().min(1).max(200),
+        limit: z.number().int().min(1).max(100).default(50),
+        offset: z.number().int().min(0).default(0),
+      })
+      .parse,
+  )
   .handler(async ({ data }) => {
     const db = getDb()
     const limit = data.limit ?? 50
@@ -128,8 +166,7 @@ export const searchEntries = createServerFn({ method: 'GET' })
     `)
 
     return result.rows as SearchResult[]
-  },
-)
+  })
 
 export const getEntry = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ id: z.number().int().positive() }).parse)
@@ -173,8 +210,7 @@ export const getEntry = createServerFn({ method: 'GET' })
       expressions: entryExpressions,
       relatedWord: entryRelated,
     } as EntryDetail
-  },
-)
+  })
 
 export const getRandomEntry = createServerFn({ method: 'GET' }).handler(
   async () => {

@@ -18,8 +18,10 @@ export const entries = pgTable(
     soundFilename: text('sound_filename'),
     grammaticalNoteFr: text('grammatical_note_fr'),
     grammaticalNoteEn: text('grammatical_note_en'),
-    // head_letter and search_tsv are generated columns managed by SQL
+    // head_letter, french_letter, english_letter, search_tsv are generated columns managed by SQL
     headLetter: text('head_letter'),
+    frenchLetter: text('french_letter'),
+    englishLetter: text('english_letter'),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),

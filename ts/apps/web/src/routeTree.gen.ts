@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as STermRouteImport } from './routes/s.$term'
-import { Route as LangIndexLetterRouteImport } from './routes/$lang.index.$letter'
-import { Route as LangEntriesEntryIdRouteImport } from './routes/$lang.entries.$entryId'
+import { Route as EntriesEntryIdRouteImport } from './routes/entries.$entryId'
+import { Route as DirIndexLetterRouteImport } from './routes/$dir.index.$letter'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -24,58 +24,54 @@ const STermRoute = STermRouteImport.update({
   path: '/s/$term',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LangIndexLetterRoute = LangIndexLetterRouteImport.update({
-  id: '/$lang/index/$letter',
-  path: '/$lang/index/$letter',
+const EntriesEntryIdRoute = EntriesEntryIdRouteImport.update({
+  id: '/entries/$entryId',
+  path: '/entries/$entryId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LangEntriesEntryIdRoute = LangEntriesEntryIdRouteImport.update({
-  id: '/$lang/entries/$entryId',
-  path: '/$lang/entries/$entryId',
+const DirIndexLetterRoute = DirIndexLetterRouteImport.update({
+  id: '/$dir/index/$letter',
+  path: '/$dir/index/$letter',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/entries/$entryId': typeof EntriesEntryIdRoute
   '/s/$term': typeof STermRoute
-  '/$lang/entries/$entryId': typeof LangEntriesEntryIdRoute
-  '/$lang/index/$letter': typeof LangIndexLetterRoute
+  '/$dir/index/$letter': typeof DirIndexLetterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/entries/$entryId': typeof EntriesEntryIdRoute
   '/s/$term': typeof STermRoute
-  '/$lang/entries/$entryId': typeof LangEntriesEntryIdRoute
-  '/$lang/index/$letter': typeof LangIndexLetterRoute
+  '/$dir/index/$letter': typeof DirIndexLetterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/entries/$entryId': typeof EntriesEntryIdRoute
   '/s/$term': typeof STermRoute
-  '/$lang/entries/$entryId': typeof LangEntriesEntryIdRoute
-  '/$lang/index/$letter': typeof LangIndexLetterRoute
+  '/$dir/index/$letter': typeof DirIndexLetterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/s/$term'
-    | '/$lang/entries/$entryId'
-    | '/$lang/index/$letter'
+  fullPaths: '/' | '/entries/$entryId' | '/s/$term' | '/$dir/index/$letter'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/s/$term' | '/$lang/entries/$entryId' | '/$lang/index/$letter'
+  to: '/' | '/entries/$entryId' | '/s/$term' | '/$dir/index/$letter'
   id:
     | '__root__'
     | '/'
+    | '/entries/$entryId'
     | '/s/$term'
-    | '/$lang/entries/$entryId'
-    | '/$lang/index/$letter'
+    | '/$dir/index/$letter'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EntriesEntryIdRoute: typeof EntriesEntryIdRoute
   STermRoute: typeof STermRoute
-  LangEntriesEntryIdRoute: typeof LangEntriesEntryIdRoute
-  LangIndexLetterRoute: typeof LangIndexLetterRoute
+  DirIndexLetterRoute: typeof DirIndexLetterRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -94,18 +90,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof STermRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$lang/index/$letter': {
-      id: '/$lang/index/$letter'
-      path: '/$lang/index/$letter'
-      fullPath: '/$lang/index/$letter'
-      preLoaderRoute: typeof LangIndexLetterRouteImport
+    '/entries/$entryId': {
+      id: '/entries/$entryId'
+      path: '/entries/$entryId'
+      fullPath: '/entries/$entryId'
+      preLoaderRoute: typeof EntriesEntryIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$lang/entries/$entryId': {
-      id: '/$lang/entries/$entryId'
-      path: '/$lang/entries/$entryId'
-      fullPath: '/$lang/entries/$entryId'
-      preLoaderRoute: typeof LangEntriesEntryIdRouteImport
+    '/$dir/index/$letter': {
+      id: '/$dir/index/$letter'
+      path: '/$dir/index/$letter'
+      fullPath: '/$dir/index/$letter'
+      preLoaderRoute: typeof DirIndexLetterRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -113,9 +109,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EntriesEntryIdRoute: EntriesEntryIdRoute,
   STermRoute: STermRoute,
-  LangEntriesEntryIdRoute: LangEntriesEntryIdRoute,
-  LangIndexLetterRoute: LangIndexLetterRoute,
+  DirIndexLetterRoute: DirIndexLetterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

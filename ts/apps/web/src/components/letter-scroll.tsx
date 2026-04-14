@@ -1,19 +1,17 @@
 import { Link } from '@tanstack/react-router'
-import { LETTERS, languageToCode, type LangName } from '@/lib/constants'
+import { LETTERS, type Direction } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { ChevronsUp, ChevronsDown } from 'lucide-react'
 
 export function LetterScroll({
-  language = 'french',
+  dir = 'mb-fr',
   activeLetter,
   className,
 }: {
-  language: LangName
+  dir?: Direction
   activeLetter?: string
   className?: string
 }) {
-  const lang = languageToCode(language)
-
   return (
     <nav
       aria-label="Letter navigation"
@@ -34,8 +32,8 @@ export function LetterScroll({
         return (
           <Link
             key={letter}
-            to="/$lang/index/$letter"
-            params={{ lang, letter }}
+            to="/$dir/index/$letter"
+            params={{ dir, letter }}
             className={cn(
               'flex items-center justify-center size-6 rounded-md text-xs font-medium capitalize transition-all',
               isActive

@@ -17,6 +17,12 @@ CREATE TABLE entries (
   grammatical_note_fr TEXT,
   grammatical_note_en TEXT,
   head_letter         TEXT GENERATED ALWAYS AS (LOWER(LEFT(immutable_unaccent(headword), 1))) STORED,
+  french_letter       TEXT GENERATED ALWAYS AS (LOWER(LEFT(immutable_unaccent(
+    REGEXP_REPLACE(french, '^[''\\(\\{\\[\\-\\s]+', '', 'g')
+  ), 1))) STORED,
+  english_letter      TEXT GENERATED ALWAYS AS (LOWER(LEFT(immutable_unaccent(
+    REGEXP_REPLACE(english, '^[''\\(\\{\\[\\-\\s]+', '', 'g')
+  ), 1))) STORED,
   search_tsv          tsvector GENERATED ALWAYS AS (
     setweight(to_tsvector('simple', immutable_unaccent(coalesce(headword, ''))), 'A') ||
     setweight(to_tsvector('english', immutable_unaccent(coalesce(english, ''))), 'B') ||
@@ -30,7 +36,9 @@ CREATE INDEX entries_search_tsv_idx  ON entries USING GIN (search_tsv);
 CREATE INDEX entries_headword_trgm   ON entries USING GIN (headword  gin_trgm_ops);
 CREATE INDEX entries_english_trgm    ON entries USING GIN (english   gin_trgm_ops);
 CREATE INDEX entries_french_trgm     ON entries USING GIN (french    gin_trgm_ops);
-CREATE INDEX entries_head_letter_idx ON entries (head_letter);
+CREATE INDEX entries_head_letter_idx    ON entries (head_letter);
+CREATE INDEX entries_french_letter_idx  ON entries (french_letter);
+CREATE INDEX entries_english_letter_idx ON entries (english_letter);
 
 CREATE TABLE examples (
   id             INTEGER PRIMARY KEY,

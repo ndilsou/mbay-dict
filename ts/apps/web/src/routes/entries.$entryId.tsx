@@ -2,38 +2,34 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { getEntry } from '@/server/entries'
 import { PageContainer } from '@/components/page-container'
 import { SoundButton } from '@/components/sound-button'
-import { langCodeToName, type LangName } from '@/lib/constants'
 import { ArrowLeft } from 'lucide-react'
 import { Icon } from '@iconify/react'
 import { env } from '@/env'
 import { t } from '@/lib/i18n'
 
-export const Route = createFileRoute('/$lang/entries/$entryId')({
+export const Route = createFileRoute('/entries/$entryId')({
   component: EntryDetail,
   loader: async ({ params }) => {
     const entry = await getEntry({
       data: { id: Number(params.entryId) },
     })
-    return { entry, lang: params.lang }
+    return { entry }
   },
 })
 
 function EntryDetail() {
-  const { entry, lang } = Route.useLoaderData()
+  const { entry } = Route.useLoaderData()
   const router = useRouter()
-
-  let language: LangName
-  try {
-    language = langCodeToName(lang)
-  } catch {
-    language = 'french'
-  }
+  // Default to french for labels; entry detail shows both languages anyway
+  const language = 'french' as const
 
   if (!entry) {
     return (
       <PageContainer className="items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-2">{t('entry_not_found', language)}</h1>
+          <h1 className="text-2xl font-bold mb-2">
+            {t('entry_not_found', language)}
+          </h1>
           <p className="text-muted-foreground mb-4">
             {t('entry_not_found_desc', language)}
           </p>
@@ -47,12 +43,6 @@ function EntryDetail() {
       </PageContainer>
     )
   }
-
-  const translation = language === 'french' ? entry.french : entry.english
-  const gramNote =
-    language === 'french'
-      ? entry.grammaticalNoteFr
-      : entry.grammaticalNoteEn
 
   return (
     <PageContainer className="items-start max-w-3xl">
@@ -80,9 +70,21 @@ function EntryDetail() {
                 </span>
               )}
             </div>
-            <p className="mt-3 text-lg leading-relaxed text-muted-foreground md:text-xl">
-              {translation}
-            </p>
+            {/* Both translations */}
+            <div className="mt-3 space-y-1">
+              <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
+                <span className="text-xs font-medium text-muted-foreground/60 uppercase mr-2">
+                  FR
+                </span>
+                {entry.french}
+              </p>
+              <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
+                <span className="text-xs font-medium text-muted-foreground/60 uppercase mr-2">
+                  EN
+                </span>
+                {entry.english}
+              </p>
+            </div>
           </div>
           {entry.soundFilename && env.VITE_PUBLIC_BUCKET_NAME && (
             <div className="shrink-0 pt-2">
@@ -94,16 +96,32 @@ function EntryDetail() {
           )}
         </div>
 
-        {/* Grammatical note */}
-        {gramNote && (
+        {/* Grammatical notes — show both if available */}
+        {(entry.grammaticalNoteFr || entry.grammaticalNoteEn) && (
           <div className="mt-4 flex items-start gap-2 rounded-lg bg-secondary/50 px-4 py-3">
-            <Icon icon="solar:notebook-bold-duotone" className="size-4 text-muted-foreground shrink-0 mt-0.5" />
-            <div className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">
-                {t('grammatical_note', language)}
-              </span>
-              <span className="mx-1.5 text-border">|</span>
-              {gramNote}
+            <Icon
+              icon="solar:notebook-bold-duotone"
+              className="size-4 text-muted-foreground shrink-0 mt-0.5"
+            />
+            <div className="text-sm text-muted-foreground space-y-0.5">
+              {entry.grammaticalNoteFr && (
+                <p>
+                  <span className="font-semibold text-foreground">
+                    Note grammaticale
+                  </span>
+                  <span className="mx-1.5 text-border">|</span>
+                  {entry.grammaticalNoteFr}
+                </p>
+              )}
+              {entry.grammaticalNoteEn && (
+                <p>
+                  <span className="font-semibold text-foreground">
+                    Grammatical note
+                  </span>
+                  <span className="mx-1.5 text-border">|</span>
+                  {entry.grammaticalNoteEn}
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -111,15 +129,15 @@ function EntryDetail() {
         {/* Related word */}
         {entry.relatedWord && (
           <div className="mt-3 flex items-center gap-2 text-sm">
-            <Icon icon="solar:link-round-bold-duotone" className="size-3.5 text-muted-foreground" />
-            <span className="text-muted-foreground">
-              {t('see_also', language)}:
-            </span>
+            <Icon
+              icon="solar:link-round-bold-duotone"
+              className="size-3.5 text-muted-foreground"
+            />
+            <span className="text-muted-foreground">Voir aussi:</span>
             {entry.relatedWord.relatedEntryId ? (
               <Link
-                to="/$lang/entries/$entryId"
+                to="/entries/$entryId"
                 params={{
-                  lang,
                   entryId: String(entry.relatedWord.relatedEntryId),
                 }}
                 className="font-semibold text-primary hover:underline"
@@ -137,9 +155,12 @@ function EntryDetail() {
       {entry.expressions.length > 0 && (
         <section className="w-full mb-8 animate-slide-in-up">
           <div className="flex items-center gap-2 mb-4">
-            <Icon icon="solar:chat-round-dots-bold-duotone" className="size-4 text-primary" />
+            <Icon
+              icon="solar:chat-round-dots-bold-duotone"
+              className="size-4 text-primary"
+            />
             <h2 className="text-base font-semibold uppercase tracking-wider text-muted-foreground">
-              {t('expressions', language)}
+              Expressions
             </h2>
             <span className="text-xs text-muted-foreground/60">
               ({entry.expressions.length})
@@ -163,19 +184,20 @@ function EntryDetail() {
                   )}
                 </div>
                 <p className="mt-1 text-[15px] text-muted-foreground">
-                  {language === 'french' ? expr.french : expr.english}
+                  {expr.french}
                 </p>
                 {expr.exampleMbay && (
                   <div className="mt-3 flex items-start gap-2 rounded-lg bg-secondary/40 px-3 py-2.5 text-sm">
-                    <Icon icon="solar:quote-down-circle-linear" className="size-3.5 text-muted-foreground/50 shrink-0 mt-0.5" />
+                    <Icon
+                      icon="solar:quote-down-circle-linear"
+                      className="size-3.5 text-muted-foreground/50 shrink-0 mt-0.5"
+                    />
                     <div>
                       <span className="font-medium text-foreground/80">
                         {expr.exampleMbay}
                       </span>
                       <p className="text-muted-foreground mt-0.5">
-                        {language === 'french'
-                          ? expr.exampleFrench
-                          : expr.exampleEnglish}
+                        {expr.exampleFrench}
                       </p>
                     </div>
                   </div>
@@ -190,9 +212,12 @@ function EntryDetail() {
       {entry.examples.length > 0 && (
         <section className="w-full mb-8 animate-slide-in-up">
           <div className="flex items-center gap-2 mb-4">
-            <Icon icon="solar:quote-down-circle-bold-duotone" className="size-4 text-primary" />
+            <Icon
+              icon="solar:quote-down-circle-bold-duotone"
+              className="size-4 text-primary"
+            />
             <h2 className="text-base font-semibold uppercase tracking-wider text-muted-foreground">
-              {t('usage_examples', language)}
+              Exemples d&apos;usage
             </h2>
             <span className="text-xs text-muted-foreground/60">
               ({entry.examples.length})
@@ -216,7 +241,7 @@ function EntryDetail() {
                   )}
                 </div>
                 <p className="mt-1 text-[15px] text-muted-foreground">
-                  {language === 'french' ? ex.french : ex.english}
+                  {ex.french}
                 </p>
               </div>
             ))}

@@ -49,8 +49,8 @@ function SearchResults() {
             {t('no_results_desc', language)}
           </p>
           <Link
-            to="/$lang/index/$letter"
-            params={{ lang: 'fr', letter: 'a' }}
+            to="/$dir/index/$letter"
+            params={{ dir: 'mb-fr', letter: 'a' }}
             className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             {t('view_index', language)}
@@ -59,7 +59,7 @@ function SearchResults() {
       ) : (
         <div className="flex flex-col gap-2 w-full animate-stagger">
           {results.map((entry) => (
-            <EntryCard key={entry.id} entry={entry} language={language} />
+            <EntryCard key={entry.id} entry={entry} direction="mb-fr" />
           ))}
         </div>
       )}

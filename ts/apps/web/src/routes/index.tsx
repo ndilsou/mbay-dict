@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { listLetters } from '@/server/entries'
+import type { Direction } from '@/lib/constants'
 import { Alphabet } from '@/components/alphabet'
 import { ArrowRight } from 'lucide-react'
 import { Icon } from '@iconify/react'
@@ -7,7 +8,7 @@ import { Icon } from '@iconify/react'
 export const Route = createFileRoute('/')({
   component: Home,
   loader: async () => {
-    const letters = await listLetters()
+    const letters = await listLetters({ data: { column: 'head_letter' } })
     return { letters }
   },
 })
@@ -37,16 +38,16 @@ function Home() {
           {/* Language CTAs */}
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              to="/$lang/index/$letter"
-              params={{ lang: 'fr', letter: 'a' }}
+              to="/$dir/index/$letter"
+              params={{ dir: 'mb-fr' as Direction, letter: 'a' }}
               className="group inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition-all hover:shadow-md hover:shadow-primary/30 hover:-translate-y-[1px] active:translate-y-0"
             >
               Francais / Mbay
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
-              to="/$lang/index/$letter"
-              params={{ lang: 'en', letter: 'a' }}
+              to="/$dir/index/$letter"
+              params={{ dir: 'mb-en' as Direction, letter: 'a' }}
               className="group inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground shadow-sm transition-all hover:shadow-md hover:border-border/80 hover:-translate-y-[1px] active:translate-y-0"
             >
               English / Mbay
@@ -63,7 +64,7 @@ function Home() {
             Explorer par lettre
           </h2>
         </div>
-        <Alphabet letters={letters} />
+        <Alphabet dir="mb-fr" letters={letters} />
       </section>
 
       {/* Info cards */}
