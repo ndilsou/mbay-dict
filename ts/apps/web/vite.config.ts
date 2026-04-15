@@ -6,7 +6,6 @@ import viteTsConfigPaths from 'vite-tsconfig-paths'
 import tailwindcss from '@tailwindcss/vite'
 import neon from './neon-vite-plugin.ts'
 
-// Skip neon plugin when using local postgres (docker)
 // Skip neon provisioning plugin when using local postgres (docker)
 const useLocalDb = !!process.env.DATABASE_URL?.includes('localhost')
 
@@ -20,7 +19,19 @@ const config = defineConfig({
       projects: ['./tsconfig.json'],
     }),
     tailwindcss(),
-    tanstackStart(),
+    tanstackStart({
+      prerender: {
+        enabled: true,
+        crawlLinks: true,
+        pages: [
+          { path: '/' },
+          { path: '/mb-fr/index/a' },
+          { path: '/mb-en/index/a' },
+          { path: '/fr-mb/index/a' },
+          { path: '/en-mb/index/a' },
+        ],
+      },
+    }),
     nitro(),
     viteReact(),
   ],
