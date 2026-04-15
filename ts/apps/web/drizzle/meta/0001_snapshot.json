@@ -1,0 +1,382 @@
+{
+  "id": "a769b71a-2467-4f2c-aca8-a1810ce39f6d",
+  "prevId": "dc6709c1-e455-4100-9490-4c7fe8e97cab",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.entries": {
+      "name": "entries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "headword": {
+          "name": "headword",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "part_of_speech": {
+          "name": "part_of_speech",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "english": {
+          "name": "english",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "french": {
+          "name": "french",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sound_filename": {
+          "name": "sound_filename",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "grammatical_note_fr": {
+          "name": "grammatical_note_fr",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "grammatical_note_en": {
+          "name": "grammatical_note_en",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "head_letter": {
+          "name": "head_letter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "french_letter": {
+          "name": "french_letter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "english_letter": {
+          "name": "english_letter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "entries_head_letter_idx": {
+          "name": "entries_head_letter_idx",
+          "columns": [
+            {
+              "expression": "head_letter",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.examples": {
+      "name": "examples",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "entry_id": {
+          "name": "entry_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mbay": {
+          "name": "mbay",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "english": {
+          "name": "english",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "french": {
+          "name": "french",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sound_filename": {
+          "name": "sound_filename",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "examples_entry_id_idx": {
+          "name": "examples_entry_id_idx",
+          "columns": [
+            {
+              "expression": "entry_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "examples_entry_id_entries_id_fk": {
+          "name": "examples_entry_id_entries_id_fk",
+          "tableFrom": "examples",
+          "columnsFrom": [
+            "entry_id"
+          ],
+          "tableTo": "entries",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.expressions": {
+      "name": "expressions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "entry_id": {
+          "name": "entry_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mbay": {
+          "name": "mbay",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "english": {
+          "name": "english",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "french": {
+          "name": "french",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sound_filename": {
+          "name": "sound_filename",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "example_mbay": {
+          "name": "example_mbay",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "example_english": {
+          "name": "example_english",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "example_french": {
+          "name": "example_french",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "example_sound": {
+          "name": "example_sound",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "expressions_entry_id_idx": {
+          "name": "expressions_entry_id_idx",
+          "columns": [
+            {
+              "expression": "entry_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "expressions_entry_id_entries_id_fk": {
+          "name": "expressions_entry_id_entries_id_fk",
+          "tableFrom": "expressions",
+          "columnsFrom": [
+            "entry_id"
+          ],
+          "tableTo": "entries",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.related_words": {
+      "name": "related_words",
+      "schema": "",
+      "columns": {
+        "entry_id": {
+          "name": "entry_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "related_entry_id": {
+          "name": "related_entry_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "related_words_entry_id_entries_id_fk": {
+          "name": "related_words_entry_id_entries_id_fk",
+          "tableFrom": "related_words",
+          "columnsFrom": [
+            "entry_id"
+          ],
+          "tableTo": "entries",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "related_words_related_entry_id_entries_id_fk": {
+          "name": "related_words_related_entry_id_entries_id_fk",
+          "tableFrom": "related_words",
+          "columnsFrom": [
+            "related_entry_id"
+          ],
+          "tableTo": "entries",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "set null"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "views": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
