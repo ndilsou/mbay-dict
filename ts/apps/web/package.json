@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@faker-js/faker": "^10.4.0",
+    "@google/genai": "^1.50.1",
     "@iconify/react": "^6.0.2",
     "@neondatabase/serverless": "^1.0.2",
     "@radix-ui/react-label": "^2.1.8",
